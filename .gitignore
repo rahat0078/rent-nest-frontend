@@ -39,3 +39,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+
+#working flow .md
+PHASE1_ROADMAP.md
+PHASE2_ROADMAP.md
+PHASE3_ROADMAP.md
+MASTER_ROADMAP.md
