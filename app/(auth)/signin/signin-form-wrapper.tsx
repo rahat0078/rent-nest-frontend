@@ -1,7 +1,7 @@
 "use client";
 
 import { LoginForm } from "@/components/login-form";
-import { loginUser } from "@/services/authService/loginUser";
+import { loginUser } from "@/app/(auth)/_authActions/loginUser";
 import { TLoginUser } from "@/types/auth.types";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -15,9 +15,7 @@ export default function SignInFormWrapper() {
       router.push("/");
       router.refresh();
     } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Login Failed",
-      );
+      toast.error(error instanceof Error ? error.message : "Login Failed");
     }
   };
 

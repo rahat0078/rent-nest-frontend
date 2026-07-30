@@ -2,27 +2,39 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { Menu, X, LogOut, LayoutDashboard, User } from "lucide-react";
 import Image from "next/image";
+import { Menu, X, LogOut, LayoutDashboard, User } from "lucide-react";
+import { TGetMeResponse } from "@/app/(auth)/_authActions/getMe";
+import { logoutUser } from "@/app/(auth)/_authActions/logoutUser";
 
 interface NavbarProps {
-  isLoggedIn?: boolean;
-  userImage?: string;
-  userName?: string;
-  onLogout?: () => void;
+  user: TGetMeResponse | null;
 }
 
-export default function Navbar({
-  isLoggedIn = false,
-  userImage = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop",
-  userName = "John Doe",
-  onLogout = () => {},
-}: NavbarProps) {
+export default function Navbar({ user, }: NavbarProps) {
+  const userImage = user?.profilePhoto;
+  const userName = user?.name || "User";
+  const userEmail = user?.email || "";
+  const isLoggedIn = !!user;
+
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
 
-  // Handle outside click for profile dropdown
+  // Fallback initials for user avatar
+  const userInitials = userName
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+
+  const handleLogout = async () => {
+    setIsProfileDropdownOpen(false);
+    setIsDrawerOpen(false);
+    await logoutUser();
+  };
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
@@ -44,7 +56,7 @@ export default function Navbar({
     <nav className="sticky top-0 z-50 bg-background border-b border-border shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Logo and Name - Left (hidden on mobile) */}
+          {/* Logo - Desktop */}
           <Link
             href="/"
             className="hidden sm:flex items-center gap-2.5 shrink-0"
@@ -55,11 +67,11 @@ export default function Navbar({
               </span>
             </div>
             <span className="text-lg font-semibold text-foreground">
-              RentHub
+              RentNest
             </span>
           </Link>
 
-          {/* Mobile Logo - Center on small screens */}
+          {/* Logo - Mobile Center */}
           <Link
             href="/"
             className="sm:hidden flex items-center gap-2 shrink-0 absolute left-1/2 transform -translate-x-1/2"
@@ -69,9 +81,12 @@ export default function Navbar({
                 R
               </span>
             </div>
+            <span className="text-base font-semibold text-foreground">
+              RentNest
+            </span>
           </Link>
 
-          {/* Desktop Navigation - Middle */}
+          {/* Navigation Links - Middle */}
           <div className="hidden md:flex items-center gap-1">
             <Link
               href="/"
@@ -87,74 +102,90 @@ export default function Navbar({
             </Link>
           </div>
 
-          {/* Mobile Navigation Center - Visible on mobile only */}
+          {/* Mobile Links Left */}
           <div className="flex md:hidden items-center gap-1">
             <Link
               href="/"
-              className="px-3 py-2 text-xs font-medium text-foreground hover:bg-accent hover:text-accent-foreground rounded-md transition-colors duration-200"
+              className="px-2.5 py-1.5 text-xs font-medium text-foreground hover:bg-accent rounded-md transition-colors"
             >
               Home
             </Link>
             <Link
               href="/properties"
-              className="px-3 py-2 text-xs font-medium text-foreground hover:bg-accent hover:text-accent-foreground rounded-md transition-colors duration-200"
+              className="px-2.5 py-1.5 text-xs font-medium text-foreground hover:bg-accent rounded-md transition-colors"
             >
               Properties
             </Link>
           </div>
 
-          {/* Right Side - Desktop */}
+          {/* Desktop Right Controls */}
           <div className="hidden md:flex items-center gap-3">
             {isLoggedIn ? (
               <div ref={profileRef} className="relative">
                 <button
-                  onClick={() =>
-                    setIsProfileDropdownOpen(!isProfileDropdownOpen)
-                  }
-                  onMouseEnter={() => setIsProfileDropdownOpen(true)}
-                  className="w-10 h-10 rounded-full overflow-hidden border-2 border-primary/30 hover:border-primary transition-colors duration-200 shadow-sm"
-                  aria-label="Profile menu"
+                  type="button"
+                  onClick={() => setIsProfileDropdownOpen((prev) => !prev)}
+                  className="w-10 h-10 rounded-full overflow-hidden border-2 border-primary/30 hover:border-primary transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary/20 flex items-center justify-center bg-muted"
+                  aria-label="User profile menu"
                 >
-                  <Image
-                    unoptimized
-                    width={400}
-                    height={400}
-                    src={userImage}
-                    alt={userName}
-                    className="w-full h-full object-cover"
-                  />
+                  {userImage ? (
+                    <Image
+                      unoptimized
+                      width={40}
+                      height={40}
+                      src={userImage}
+                      alt={userName}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-sm font-semibold text-primary">
+                      {userInitials}
+                    </span>
+                  )}
                 </button>
 
+                {/* Profile Dropdown Menu */}
                 {isProfileDropdownOpen && (
-                  <div
-                    className="absolute right-0 mt-2 w-56 bg-card border border-border rounded-xl shadow-lg py-2 z-10"
-                    onMouseEnter={() => setIsProfileDropdownOpen(true)}
-                    onMouseLeave={() => setIsProfileDropdownOpen(false)}
-                  >
-                    <div className="flex flex-col space-y-1 p-4">
-                      <p className="text-sm font-medium leading-none">John</p>
-                      <p className="text-xs leading-none text-muted-foreground">
-                        john@gmail.com
+                  <div className="absolute right-0 mt-2 w-56 bg-card border border-border rounded-xl shadow-lg py-2 z-50">
+                    <div className="flex flex-col space-y-1 px-4 py-3 border-b border-border">
+                      <p className="text-sm font-semibold leading-none text-foreground">
+                        {userName}
+                      </p>
+                      <p className="text-xs leading-none text-muted-foreground truncate">
+                        {userEmail}
                       </p>
                     </div>
-                    <button className="w-full px-4 py-2.5 text-sm text-left text-foreground hover:bg-accent hover:text-accent-foreground flex items-center gap-3 transition-colors duration-150">
-                      <LayoutDashboard className="w-4 h-4" />
-                      Dashboard
-                    </button>
-                    <button className="w-full px-4 py-2.5 text-sm text-left text-foreground hover:bg-accent hover:text-accent-foreground flex items-center gap-3 transition-colors duration-150">
-                      <User className="w-4 h-4" />
-                      Profile
-                    </button>
-                    <button
-                      onClick={() => {
-                        setIsProfileDropdownOpen(false);
-                        onLogout();
-                      }}
-                      className="w-full px-4 py-2.5 text-sm text-left text-destructive hover:bg-destructive/10 flex items-center gap-3 transition-colors duration-150 border-t border-border"
-                    >
-                      <LogOut className="w-4 h-4" />
-                      Logout
-                    </button>
+
+                    <div className="py-1">
+                      <Link
+                        href="/dashboard"
+                        onClick={() => setIsProfileDropdownOpen(false)}
+                        className="w-full px-4 py-2 text-sm text-foreground hover:bg-accent hover:text-accent-foreground flex items-center gap-3 transition-colors duration-150"
+                      >
+                        <LayoutDashboard className="w-4 h-4 text-muted-foreground" />
+                        Dashboard
+                      </Link>
+
+                      <Link
+                        href="/dashboard/profile"
+                        onClick={() => setIsProfileDropdownOpen(false)}
+                        className="w-full px-4 py-2 text-sm text-foreground hover:bg-accent hover:text-accent-foreground flex items-center gap-3 transition-colors duration-150"
+                      >
+                        <User className="w-4 h-4 text-muted-foreground" />
+                        Profile
+                      </Link>
+                    </div>
+
+                    <div className="border-t border-border pt-1">
+                      <button
+                        type="button"
+                        onClick={handleLogout}
+                        className="w-full px-4 py-2 text-sm text-left text-destructive hover:bg-destructive/10 flex items-center gap-3 transition-colors duration-150"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        Logout
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
@@ -172,34 +203,17 @@ export default function Navbar({
                 >
                   Register
                 </Link>
-                
               </div>
             )}
           </div>
 
-          {/* Mobile Profile and Menu Button */}
+          {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center gap-2">
-            {isLoggedIn && (
-              <div ref={profileRef} className="relative">
-                <button
-                  className="w-9 h-9 rounded-full overflow-hidden border-2 border-primary/30 hover:border-primary transition-colors duration-200 shadow-sm"
-                  aria-label="Profile menu"
-                >
-                  <Image
-                    unoptimized
-                    width={400}
-                    height={400}
-                    src={userImage}
-                    alt={userName}
-                    className="w-full h-full object-cover"
-                  />
-                </button>
-              </div>
-            )}
             <button
-              onClick={() => setIsDrawerOpen(!isDrawerOpen)}
+              type="button"
+              onClick={() => setIsDrawerOpen((prev) => !prev)}
               className="p-2 rounded-lg hover:bg-accent hover:text-accent-foreground transition-colors duration-200"
-              aria-label="Toggle menu"
+              aria-label="Toggle drawer navigation"
             >
               {isDrawerOpen ? (
                 <X className="w-6 h-6" />
@@ -213,56 +227,81 @@ export default function Navbar({
 
       {/* Mobile Drawer */}
       {isDrawerOpen && (
-        <div className="md:hidden bg-card border-b border-border">
-          <div className="px-4 py-3 space-y-2">
-            <div className="border-t border-border pt-3 mt-2">
-              {isLoggedIn ? (
-                <>
-                  <div className="px-4 py-2 flex items-center gap-3 mb-2">
+        <div className="md:hidden bg-card border-b border-border px-4 py-4 space-y-3">
+          {isLoggedIn ? (
+            <div className="space-y-2">
+              <div className="flex items-center gap-3 pb-3 border-b border-border">
+                <div className="w-10 h-10 rounded-full overflow-hidden bg-muted flex items-center justify-center border">
+                  {userImage ? (
                     <Image
                       unoptimized
-                      width={400}
-                      height={400}
+                      width={40}
+                      height={40}
                       src={userImage}
                       alt={userName}
-                      className="w-8 h-8 rounded-full object-cover"
+                      className="w-full h-full object-cover"
                     />
-                    <span className="text-sm font-medium text-foreground">
-                      {userName}
+                  ) : (
+                    <span className="text-sm font-semibold text-primary">
+                      {userInitials}
                     </span>
-                  </div>
-                  <button className="w-full px-4 py-2.5 text-sm text-left text-foreground hover:bg-accent hover:text-accent-foreground rounded-lg flex items-center gap-3 transition-colors duration-150">
-                    <LayoutDashboard className="w-4 h-4" />
-                    Dashboard
-                  </button>
-                  <button className="w-full px-4 py-2.5 text-sm text-left text-foreground hover:bg-accent hover:text-accent-foreground rounded-lg flex items-center gap-3 transition-colors duration-150">
-                    <User className="w-4 h-4" />
-                    Profile
-                  </button>
-                  <button
-                    onClick={() => {
-                      setIsDrawerOpen(false);
-                      onLogout();
-                    }}
-                    className="w-full px-4 py-2.5 text-sm text-left text-destructive hover:bg-destructive/10 rounded-lg flex items-center gap-3 transition-colors duration-150"
-                  >
-                    <LogOut className="w-4 h-4" />
-                    Logout
-                  </button>
-                </>
-              ) : (
-                <div className="flex flex-col gap-2">
-                  <Link
-                    href="/signin"
-                    className="px-4 py-2.5 text-sm font-medium text-center text-primary border border-primary/30 rounded-lg hover:bg-primary/10 hover:border-primary transition-colors duration-200"
-                    onClick={() => setIsDrawerOpen(false)}
-                  >
-                    Sign In
-                  </Link>
+                  )}
                 </div>
-              )}
+                <div className="flex flex-col">
+                  <span className="text-sm font-semibold text-foreground">
+                    {userName}
+                  </span>
+                  <span className="text-xs text-muted-foreground truncate max-w-50">
+                    {userEmail}
+                  </span>
+                </div>
+              </div>
+
+              <Link
+                href="/dashboard"
+                onClick={() => setIsDrawerOpen(false)}
+                className="w-full px-3 py-2.5 text-sm text-foreground hover:bg-accent rounded-lg flex items-center gap-3 transition-colors"
+              >
+                <LayoutDashboard className="w-4 h-4 text-muted-foreground" />
+                Dashboard
+              </Link>
+
+              <Link
+                href="/dashboard/profile"
+                onClick={() => setIsDrawerOpen(false)}
+                className="w-full px-3 py-2.5 text-sm text-foreground hover:bg-accent rounded-lg flex items-center gap-3 transition-colors"
+              >
+                <User className="w-4 h-4 text-muted-foreground" />
+                Profile
+              </Link>
+
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="w-full px-3 py-2.5 text-sm text-left text-destructive hover:bg-destructive/10 rounded-lg flex items-center gap-3 transition-colors"
+              >
+                <LogOut className="w-4 h-4" />
+                Logout
+              </button>
             </div>
-          </div>
+          ) : (
+            <div className="flex flex-col gap-2 pt-1">
+              <Link
+                href="/signin"
+                onClick={() => setIsDrawerOpen(false)}
+                className="w-full py-2.5 text-center text-sm font-medium text-primary border border-primary/30 rounded-lg hover:bg-primary/10 transition-colors"
+              >
+                Sign In
+              </Link>
+              <Link
+                href="/signup"
+                onClick={() => setIsDrawerOpen(false)}
+                className="w-full py-2.5 text-center text-sm font-medium bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+              >
+                Register
+              </Link>
+            </div>
+          )}
         </div>
       )}
     </nav>
