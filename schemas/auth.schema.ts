@@ -37,7 +37,13 @@ export const signupSchema = z
     role: z.enum(["TENANT", "LANDLORD"], {
       error: "Please select a role",
     }),
-    phone: z.string().optional(),
+    phone: z
+      .string()
+      .trim()
+      .min(10, "Phone number is too short")
+      .max(20, "Phone number is too long")
+      .regex(/^[+]?[0-9]+$/, "Invalid phone number")
+      .optional(),
     profilePhoto: z
       .string()
       .optional()
@@ -53,7 +59,5 @@ export const signupSchema = z
 
 export const signInSchema = z.object({
   email: z.string().min(1, "Email is required").email("Invalid email address"),
-  password: z
-    .string()
-    .min(1, "Password is required")
+  password: z.string().min(1, "Password is required"),
 });
