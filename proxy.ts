@@ -1,9 +1,9 @@
-import { jwtDecode, JwtPayload } from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { toast } from "sonner";
 
-const ROLE_DASHBOARDS: Record<string, string> = {
+export const ROLE_DASHBOARDS: Record<string, string> = {
   ADMIN: "/dashboard/admin",
   LANDLORD: "/dashboard/landlord",
   TENANT: "/dashboard/tenant",
@@ -31,7 +31,6 @@ export function proxy(request: NextRequest) {
       role = decoded.role;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      console.log("Invalid token");
       toast.error(error.message)
     }
   }
