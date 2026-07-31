@@ -8,14 +8,24 @@ import { TGetMeResponse } from "@/app/(auth)/_authActions/getMe";
 import { logoutUser } from "@/app/(auth)/_authActions/logoutUser";
 
 interface NavbarProps {
-  user: TGetMeResponse | null;
+  user?: TGetMeResponse | null;
 }
 
-export default function Navbar({ user, }: NavbarProps) {
+export default function Navbar({ user }: NavbarProps) {
   const userImage = user?.profilePhoto;
   const userName = user?.name || "User";
   const userEmail = user?.email || "";
   const isLoggedIn = !!user;
+
+  const dashboardRoute = isLoggedIn
+    ? user.role === "ADMIN"
+      ? "/dashboard/admin"
+      : user.role === "TENANT"
+        ? "/dashboard/tenant"
+        : user.role === "LANDLORD"
+          ? "/dashboard/landlord"
+          : "/"
+    : "/";
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
@@ -158,7 +168,7 @@ export default function Navbar({ user, }: NavbarProps) {
 
                     <div className="py-1">
                       <Link
-                        href="/dashboard"
+                        href={dashboardRoute}
                         onClick={() => setIsProfileDropdownOpen(false)}
                         className="w-full px-4 py-2 text-sm text-foreground hover:bg-accent hover:text-accent-foreground flex items-center gap-3 transition-colors duration-150"
                       >
@@ -192,13 +202,13 @@ export default function Navbar({ user, }: NavbarProps) {
             ) : (
               <div className="flex items-center gap-2.5">
                 <Link
-                  href="/signin"
+                  href="/login"
                   className="px-4 py-2 text-sm font-medium text-primary border border-primary/30 rounded-lg hover:bg-primary/10 hover:border-primary transition-colors duration-200"
                 >
                   Login
                 </Link>
                 <Link
-                  href="/signup"
+                  href="/register"
                   className="px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors duration-200 shadow-sm"
                 >
                   Register
@@ -258,7 +268,7 @@ export default function Navbar({ user, }: NavbarProps) {
               </div>
 
               <Link
-                href="/dashboard"
+                href={dashboardRoute}
                 onClick={() => setIsDrawerOpen(false)}
                 className="w-full px-3 py-2.5 text-sm text-foreground hover:bg-accent rounded-lg flex items-center gap-3 transition-colors"
               >
@@ -287,14 +297,14 @@ export default function Navbar({ user, }: NavbarProps) {
           ) : (
             <div className="flex flex-col gap-2 pt-1">
               <Link
-                href="/signin"
+                href="/login"
                 onClick={() => setIsDrawerOpen(false)}
                 className="w-full py-2.5 text-center text-sm font-medium text-primary border border-primary/30 rounded-lg hover:bg-primary/10 transition-colors"
               >
                 Sign In
               </Link>
               <Link
-                href="/signup"
+                href="/register"
                 onClick={() => setIsDrawerOpen(false)}
                 className="w-full py-2.5 text-center text-sm font-medium bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
               >

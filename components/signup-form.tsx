@@ -208,7 +208,7 @@ export function SignupForm({ className, onSubmit, ...props }: SignupFormProps) {
               </Button>
             </form>
             <FieldDescription className="text-center pb-2">
-              Don&apos;t have an account? <Link href={"/signin"}>Sign In</Link>
+              Don&apos;t have an account? <Link href={"/login"}>Sign In</Link>
             </FieldDescription>
           </div>
 

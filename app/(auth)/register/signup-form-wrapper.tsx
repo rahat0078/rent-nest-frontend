@@ -12,7 +12,7 @@ export default function SignupFormWrapper() {
     try {
       const result = await registerUser(data);
       toast.success(result.message);
-      router.push("/signin");
+      router.push("/login");
       router.refresh();
     } catch (error) {
       toast.error(
