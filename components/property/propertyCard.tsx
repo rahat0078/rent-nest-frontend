@@ -5,13 +5,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { IProperty } from "@/types/property";
+import Link from "next/link";
 
 interface PropertyCardProps {
   property: IProperty;
-  onViewDetails?: (id: string) => void;
 }
 
-export function PropertyCard({ property, onViewDetails }: PropertyCardProps) {
+export function PropertyCard({ property }: PropertyCardProps) {
   return (
     <div className="group bg-card rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border border-border">
       {/* Image */}
@@ -85,40 +85,39 @@ export function PropertyCard({ property, onViewDetails }: PropertyCardProps) {
           </div>
 
           <div className="flex items-center gap-2">
-            {
-              property.landlord.profilePhoto ? <Image
-              unoptimized
-              src={property.landlord.profilePhoto}
-              width={32}
-              height={32}
-              alt={property.landlord.name}
-              className="rounded-full"
-            /> : <Image
-              unoptimized
-              src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png"
-              width={32}
-              height={32}
-              alt={property.landlord.name}
-              className="rounded-full"
-            /> 
-            }
-
-
-            
-            
+            {property.landlord.profilePhoto ? (
+              <Image
+                unoptimized
+                src={property.landlord.profilePhoto}
+                width={32}
+                height={32}
+                alt={property.landlord.name}
+                className="rounded-full"
+              />
+            ) : (
+              <Image
+                unoptimized
+                src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png"
+                width={32}
+                height={32}
+                alt={property.landlord.name}
+                className="rounded-full"
+              />
+            )}
 
             <span className="text-sm">{property.landlord.name}</span>
           </div>
         </div>
 
-        <Button
-          variant="outline"
-          className="w-full"
-          onClick={() => onViewDetails?.(property.id)}
-        >
-          View Details
-          <ChevronRight className="w-4 h-4" />
-        </Button>
+        <Link href={`properties/${property.id}`}>
+          <Button
+            variant="outline"
+            className="w-full"
+          >
+            View Details
+            <ChevronRight className="w-4 h-4" />
+          </Button>
+        </Link>
       </div>
     </div>
   );
