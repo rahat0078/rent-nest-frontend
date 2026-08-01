@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Hero() {
   return (
@@ -24,13 +25,15 @@ export default function Hero() {
 
             {/* CTAs */}
             <div className="flex flex-col gap-4 sm:flex-row">
-              <Button
-                size="lg"
-                className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2"
-              >
-                Browse Properties
-                <ArrowRight className="w-4 h-4" />
-              </Button>
+              <Link href={"/properties"}>
+                <Button
+                  size="lg"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2"
+                >
+                  Browse Properties
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
+              </Link>
               <Button size="lg" variant="outline">
                 Learn More
               </Button>
