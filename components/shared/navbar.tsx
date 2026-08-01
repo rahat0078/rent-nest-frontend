@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Menu, X, LogOut, LayoutDashboard, User } from "lucide-react";
+import { Menu, X, LogOut, LayoutDashboard, User, Home } from "lucide-react";
 import { TGetMeResponse } from "@/app/(auth)/_authActions/getMe";
 import { logoutUser } from "@/app/(auth)/_authActions/logoutUser";
 
@@ -73,7 +73,7 @@ export default function Navbar({ user }: NavbarProps) {
           >
             <div className="w-9 h-9 bg-primary rounded-lg flex items-center justify-center shadow-sm">
               <span className="text-primary-foreground font-bold text-lg">
-                R
+                <Home/>
               </span>
             </div>
             <span className="text-lg font-semibold text-foreground">
