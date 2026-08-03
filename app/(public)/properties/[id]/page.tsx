@@ -10,15 +10,14 @@ import { getSingleProperty } from "../../_propertyActions/getSingleProperty";
 import { getAllProperty } from "../../_propertyActions/getAllProperty";
 import { IReview } from "@/types/review";
 import { RelatedProperties } from "@/components/property/relatedProperties";
-
-
+import { toast } from "sonner";
 
 export default async function PropertyDetailsPage({
   params,
 }: {
-  params: Promise<{ id: string }>
+  params: Promise<{ id: string }>;
 }) {
-  const {id} = await params;
+  const { id } = await params;
   const propertyResponse = await getSingleProperty(id);
   const property = propertyResponse?.data;
 
@@ -29,14 +28,16 @@ export default async function PropertyDetailsPage({
   const relatedPropertiesResponse = await getAllProperty({
     category: property.categoryId,
   });
+  if (relatedPropertiesResponse.data === null) {
+    toast.error("not found")
+  }
 
   const relatedData = relatedPropertiesResponse.data.data
-  .filter((p) => p.id !== property.id)
-  .slice(0,3)
-  .map((p)=>({
-    ...p,
-  }));
-  console.log(relatedData)
+    .filter((p) => p.id !== property.id)
+    .slice(0, 3)
+    .map((p) => ({
+      ...p,
+    }));
 
   return (
     <main className="min-h-screen bg-background pt-24">
@@ -46,7 +47,10 @@ export default async function PropertyDetailsPage({
           {/* Left Column - Property Information */}
           <div className="lg:col-span-2 space-y-8">
             {/* Gallery */}
-            <PropertyGallery images={[property.images]} title={property.title} />
+            <PropertyGallery
+              images={[property.images]}
+              title={property.title}
+            />
 
             {/* Property Header */}
             <div className="space-y-4">
@@ -116,7 +120,7 @@ export default async function PropertyDetailsPage({
             <PropertyLandlordCard
               name={property.landlord.name}
               profilePhoto={
-                property.landlord.profilePhoto || 
+                property.landlord.profilePhoto ||
                 `https://ui-avatars.com/api/?name=${encodeURIComponent(property.landlord.name)}`
               }
               email={property.landlord.email}
@@ -135,8 +139,8 @@ export default async function PropertyDetailsPage({
                     <ReviewCard
                       key={reviewItem.id}
                       avatar={
-                        reviewItem.tenant?.profilePhoto || 
-                        `https://ui-avatars.com/api/?name=${encodeURIComponent(reviewItem.tenant?.name || 'User')}`
+                        reviewItem.tenant?.profilePhoto ||
+                        `https://ui-avatars.com/api/?name=${encodeURIComponent(reviewItem.tenant?.name || "User")}`
                       }
                       name={reviewItem.tenant?.name || "Anonymous User"}
                       rating={reviewItem.rating}
@@ -145,7 +149,9 @@ export default async function PropertyDetailsPage({
                   ))}
                 </div>
               ) : (
-                <p className="text-muted-foreground italic">No reviews yet for this property.</p>
+                <p className="text-muted-foreground italic">
+                  No reviews yet for this property.
+                </p>
               )}
             </div>
 

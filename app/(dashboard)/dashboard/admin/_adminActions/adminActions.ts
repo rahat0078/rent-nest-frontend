@@ -1,8 +1,7 @@
-"use server"
+"use server";
 
 import { fetcher } from "@/lib/fetcher";
 import { TApiResponse } from "@/types/api";
-import { revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
 
 // --- TYPES ---
@@ -85,7 +84,10 @@ export async function getAllUsers(): Promise<
     return {
       success: false,
       message: "User not logged in",
-      data: null,
+      data: {
+        users: [],
+        totalUsers: 0,
+      },
     };
   }
 
@@ -104,7 +106,7 @@ export async function getAllUsers(): Promise<
 export async function updateUserStatus(
   userId: string,
   payload: { status: "ACTIVE" | "BANNED" },
-): Promise<TApiResponse<TUser>> {
+): Promise<TApiResponse<TUser | null>> {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("accessToken");
   if (!accessToken) {
@@ -122,7 +124,6 @@ export async function updateUserStatus(
     method: "PATCH",
     body: JSON.stringify(payload),
   });
-  
 }
 
 // 3. Get All Properties
@@ -133,7 +134,7 @@ export async function getAllProperties(): Promise<TApiResponse<TProperty[]>> {
     return {
       success: false,
       message: "User not logged in",
-      data: null,
+      data: [],
     };
   }
   return await fetcher<TProperty[]>("/api/admin/properties", {
@@ -157,7 +158,7 @@ export async function getAllRentalRequests(): Promise<
     return {
       success: false,
       message: "User not logged in",
-      data: null,
+      data: [],
     };
   }
   return await fetcher<TRentalRequest[]>("/api/admin/rentals", {
