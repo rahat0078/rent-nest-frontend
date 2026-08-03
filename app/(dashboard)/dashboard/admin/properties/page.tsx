@@ -1,12 +1,15 @@
-import { PropertyTable } from "@/components/dashboard/admin/property-table";
-import { SearchFilter } from "@/components/dashboard/admin/search-filter";
 import { Building2 } from "lucide-react";
+import { PropertyTable } from "@/components/dashboard/admin/property-table";
+import { getAllProperties } from "../_adminActions/adminActions";
+
+export default async function PropertyModerationPage() {
+  const res = await getAllProperties();
 
 
-export default function PropertyModerationPage() {
+  const properties = res.data || [];
+
   return (
     <div className="space-y-6">
-      {/* Page Header */}
       <div className="flex flex-col gap-1 border-b border-border pb-4">
         <h1 className="text-2xl font-bold tracking-tight text-foreground font-heading flex items-center gap-2">
           <Building2 className="h-6 w-6 text-primary" />
@@ -17,26 +20,7 @@ export default function PropertyModerationPage() {
         </p>
       </div>
 
-      {/* Filter Toolbar */}
-      <SearchFilter
-        searchPlaceholder="Search property title, location or landlord..."
-        filter1Label="Category"
-        filter1Options={[
-          { value: "APARTMENT", label: "Apartment" },
-          { value: "STUDIO", label: "Studio" },
-          { value: "VILLA", label: "Villa" },
-          { value: "OFFICE", label: "Office" },
-          { value: "HOUSE", label: "House" },
-        ]}
-        filter2Label="Availability"
-        filter2Options={[
-          { value: "AVAILABLE", label: "Available" },
-          { value: "UNAVAILABLE", label: "Unavailable / Rented" },
-        ]}
-      />
-
-      {/* Data Table */}
-      <PropertyTable />
+      <PropertyTable properties={properties} />
     </div>
   );
 }

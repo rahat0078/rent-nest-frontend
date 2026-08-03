@@ -13,7 +13,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
@@ -28,6 +28,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
 import { AdminSidebar } from "./admin-sidebar";
+import { cn } from "@/lib/utils";
 
 export function AdminHeader() {
   const [open, setOpen] = useState(false);
@@ -45,15 +46,14 @@ export function AdminHeader() {
       {/* Mobile Drawer & Search */}
       <div className="flex items-center gap-3 md:gap-4 flex-1 max-w-md">
         <Sheet open={open} onOpenChange={setOpen}>
-          <SheetTrigger>
-            <Button
-              variant="outline"
-              size="icon"
-              className="shrink-0 lg:hidden border-border"
-            >
-              <Menu className="h-5 w-5" />
-              <span className="sr-only">Toggle Sidebar Navigation</span>
-            </Button>
+          <SheetTrigger
+            className={buttonVariants({
+              variant: "outline",
+              size: "icon",
+            })}
+          >
+            <Menu className="h-5 w-5" />
+            <span className="sr-only">Toggle Sidebar Navigation</span>
           </SheetTrigger>
           <SheetContent side="left" className="p-0 w-72 border-r border-border">
             <AdminSidebar onNavClick={() => setOpen(false)} />
@@ -85,16 +85,13 @@ export function AdminHeader() {
 
         {/* Notifications Dropdown */}
         <DropdownMenu>
-          <DropdownMenuTrigger>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="relative h-9 w-9 text-muted-foreground hover:text-foreground"
-            >
-              <Bell className="h-4 w-4" />
-              <span className="absolute top-1.5 right-1.5 flex h-2 w-2 rounded-full bg-destructive" />
-              <span className="sr-only">View Notifications</span>
-            </Button>
+          <DropdownMenuTrigger
+            className={buttonVariants({
+              variant: "ghost",
+              size: "icon",
+            })}
+          >
+            <Bell className="h-4 w-4" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-80 p-0">
             <div className="flex items-center justify-between px-4 py-3 border-b border-border">
@@ -147,27 +144,27 @@ export function AdminHeader() {
 
         {/* Profile Avatar & Dropdown */}
         <DropdownMenu>
-          <DropdownMenuTrigger>
-            <Button
-              variant="ghost"
-              className="relative h-9 rounded-full pl-2 pr-3 flex items-center gap-2 hover:bg-muted"
-            >
-              <Avatar className="h-7 w-7 border border-border">
-                <AvatarImage
-                  src="https://i.pravatar.cc/300?img=1"
-                  alt="Ruhul Amin Rahat"
-                />
-                <AvatarFallback>RR</AvatarFallback>
-              </Avatar>
-              <div className="flex flex-col items-start text-left sm:flex">
-                <span className="text-xs font-medium leading-none">
-                  Ruhul Amin
-                </span>
-                <span className="text-[10px] text-muted-foreground leading-none mt-1">
-                  System Admin
-                </span>
-              </div>
-            </Button>
+          <DropdownMenuTrigger
+            className={cn(
+              buttonVariants({ variant: "ghost" }),
+              "h-9 rounded-full pl-2 pr-3 flex items-center gap-2",
+            )}
+          >
+            <Avatar className="h-7 w-7 border border-border">
+              <AvatarImage
+                src="https://i.pravatar.cc/300?img=1"
+                alt="Ruhul Amin Rahat"
+              />
+              <AvatarFallback>RR</AvatarFallback>
+            </Avatar>
+            <div className="flex flex-col items-start text-left hidden sm:flex">
+              <span className="text-xs font-medium leading-none">
+                Ruhul Amin
+              </span>
+              <span className="text-[10px] text-muted-foreground leading-none mt-1">
+                System Admin
+              </span>
+            </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuLabel className="font-normal">

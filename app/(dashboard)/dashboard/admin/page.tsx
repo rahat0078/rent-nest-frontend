@@ -1,50 +1,54 @@
-import { Calendar, Plus, RefreshCw, Sparkles } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { StatsCards } from "@/components/dashboard/admin/stats-cards";
-import { DashboardChart } from "@/components/dashboard/admin/dashboard-chart";
+import { getAllProperties, getAllRentalRequests, getAllUsers } from "./_adminActions/adminActions";
 import { RecentActivities } from "@/components/dashboard/admin/recent-activities";
 
-export default function AdminDashboardPage() {
-  return (
-    <div className="space-y-6">
-      {/* Top Welcome Banner */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between border-b border-border pb-5">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold tracking-tight text-foreground font-heading">
-              Welcome back, Ruhul
-            </h1>
-            <Sparkles className="h-5 w-5 text-amber-500 fill-amber-500/20" />
-          </div>
-          <p className="text-xs text-muted-foreground flex items-center gap-1.5 mt-1">
-            <Calendar className="h-3.5 w-3.5" />
-            <span>Today is Monday, August 3, 2026</span>
-            <span>•</span>
-            <span>Platform Overview</span>
-          </p>
-        </div>
 
-        {/* Quick Actions */}
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="h-9 text-xs gap-1.5">
-            <RefreshCw className="h-3.5 w-3.5" />
-            Refresh Data
-          </Button>
-          <Button size="sm" className="h-9 text-xs gap-1.5 shadow-xs">
-            <Plus className="h-3.5 w-3.5" />
-            Quick Export
-          </Button>
-        </div>
+export default async function AdminDashboardPage() {
+  // Parallel Data Fetching
+  const [usersRes, propertiesRes, rentalsRes] = await Promise.all([
+    getAllUsers(),
+    getAllProperties(),
+    getAllRentalRequests(),
+  ]);
+
+  const users = usersRes?.data?.users || [];
+  const properties = propertiesRes?.data || [];
+  const rentals = rentalsRes?.data || [];
+
+  // Calculating Statistics dynamically from retrieved database records
+  const stats = {
+    totalUsers: usersRes?.data?.totalUsers || users.length,
+    totalProperties: properties.length,
+    totalRentals: rentals.length,
+    activeTenants: users.filter((u) => u.role === "TENANT" && u.status === "ACTIVE").length,
+    activeLandlords: users.filter((u) => u.role === "LANDLORD" && u.status === "ACTIVE").length,
+    bannedUsers: users.filter((u) => u.status === "BANNED").length,
+  };
+
+  // Format recent users & rental requests for display
+  const recentUsers = users.slice(-5).reverse();
+  const recentRequests = rentals.slice(-5).reverse().map((r) => ({
+    id: r.id,
+    propertyName: r.property?.title || "Property",
+    tenantName: r.tenant?.name || "Tenant",
+    amount: r.payment?.amount || r.property?.rentAmount || 0,
+    status: r.status,
+  }));
+
+  return (
+    <div className="flex flex-col gap-6 p-6">
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight">Admin Overview</h1>
+        <p className="text-sm text-muted-foreground">
+          Platform performance metrics and recent operations
+        </p>
       </div>
 
-      {/* Stats Cards Section */}
-      <StatsCards />
+      {/* Stats Cards */}
+      <StatsCards stats={stats} />
 
-      {/* Charts Section */}
-      <DashboardChart />
-
-      {/* Bottom Activities */}
-      <RecentActivities />
+      {/* Recent Activity Section */}
+      <RecentActivities recentUsers={recentUsers} recentRequests={recentRequests} />
     </div>
   );
 }

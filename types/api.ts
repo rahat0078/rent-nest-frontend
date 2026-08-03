@@ -9,6 +9,6 @@ export type TMeta = {
 export type TApiResponse<T> = {
   success: boolean;
   message: string;
-  data: T;
+  data: T | null;
   meta?: TMeta;
 };

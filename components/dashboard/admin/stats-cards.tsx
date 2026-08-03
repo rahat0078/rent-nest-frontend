@@ -10,61 +10,74 @@ import {
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-export const mockStats = [
-  {
-    title: "Total Users",
-    value: "12",
-    growth: "+18.2%",
-    timeframe: "from last month",
-    icon: Users,
-    description: "All registered system users",
-  },
-  {
-    title: "Total Properties",
-    value: "5",
-    growth: "+12.5%",
-    timeframe: "from last month",
-    icon: Building2,
-    description: "Active platform listings",
-  },
-  {
-    title: "Rental Requests",
-    value: "2",
-    growth: "+8.4%",
-    timeframe: "from last month",
-    icon: FileCheck,
-    description: "Pending and approved requests",
-  },
-  {
-    title: "Active Tenants",
-    value: "8",
-    growth: "+22.0%",
-    timeframe: "from last month",
-    icon: UserCheck,
-    description: "Users looking for properties",
-  },
-  {
-    title: "Active Landlords",
-    value: "3",
-    growth: "+5.1%",
-    timeframe: "from last month",
-    icon: Home,
-    description: "Verified property managers",
-  },
-  {
-    title: "Banned Users",
-    value: "0",
-    growth: "0%",
-    timeframe: "clean record",
-    icon: UserX,
-    description: "Flagged or suspended accounts",
-  },
-];
+export interface StatsData {
+  totalUsers: number;
+  totalProperties: number;
+  totalRentals: number;
+  activeTenants: number;
+  activeLandlords: number;
+  bannedUsers: number;
+}
 
-export function StatsCards() {
+interface StatsCardsProps {
+  stats: StatsData;
+}
+
+export function StatsCards({ stats }: StatsCardsProps) {
+  const cards = [
+    {
+      title: "Total Users",
+      value: stats?.totalUsers?.toString(),
+      growth: "+18.2%",
+      timeframe: "from last month",
+      icon: Users,
+      description: "All registered system users",
+    },
+    {
+      title: "Total Properties",
+      value: stats.totalProperties.toString(),
+      growth: "+12.5%",
+      timeframe: "from last month",
+      icon: Building2,
+      description: "Active platform listings",
+    },
+    {
+      title: "Rental Requests",
+      value: stats.totalRentals.toString(),
+      growth: "+8.4%",
+      timeframe: "from last month",
+      icon: FileCheck,
+      description: "Pending and approved requests",
+    },
+    {
+      title: "Active Tenants",
+      value: stats.activeTenants.toString(),
+      growth: "+22.0%",
+      timeframe: "from last month",
+      icon: UserCheck,
+      description: "Users looking for properties",
+    },
+    {
+      title: "Active Landlords",
+      value: stats.activeLandlords.toString(),
+      growth: "+5.1%",
+      timeframe: "from last month",
+      icon: Home,
+      description: "Verified property managers",
+    },
+    {
+      title: "Banned Users",
+      value: stats.bannedUsers.toString(),
+      growth: "0%",
+      timeframe: "clean record",
+      icon: UserX,
+      description: "Flagged or suspended accounts",
+    },
+  ];
+
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {mockStats.map((stat, i) => {
+      {cards.map((stat, i) => {
         const Icon = stat.icon;
         return (
           <Card

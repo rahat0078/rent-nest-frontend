@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import {
   MoreHorizontal,
   Eye,
@@ -36,87 +37,39 @@ import {
   PaginationContent,
   PaginationItem,
   PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
 } from "@/components/ui/pagination";
+import { TUser, TUsersMeta } from "@/app/(dashboard)/dashboard/admin/_adminActions/getAllUsers";
+import { updateUserStatus } from "@/app/(dashboard)/dashboard/admin/_adminActions/updateUserStatus";
 
-export interface UserItem {
-  id: string;
-  name: string;
-  email: string;
-  role: "TENANT" | "LANDLORD" | "ADMIN";
-  status: "ACTIVE" | "BLOCKED" | "BANNED";
-  createdAt: string;
-  profilePhoto: string | null;
-  phone: string;
+
+interface UsersTableProps {
+  users: TUser[];
+  meta: TUsersMeta;
 }
 
-export const mockUsers: UserItem[] = [
-  {
-    id: "6a5ceae2-680b-428b-9bf2-debc4772f585",
-    name: "Tanvir Hasan",
-    email: "tanvir@example.com",
-    role: "TENANT",
-    createdAt: "2026-07-08T11:16:44.028Z",
-    profilePhoto: "https://i.pravatar.cc/300?img=2",
-    status: "ACTIVE",
-    phone: "01812345678",
-  },
-  {
-    id: "d0ca3d89-b016-4df0-9c6b-539422059884",
-    name: "Sabbir Ahmed",
-    email: "sabbir@example.com",
-    role: "LANDLORD",
-    createdAt: "2026-07-08T11:17:06.636Z",
-    profilePhoto: "https://i.pravatar.cc/300?img=4",
-    status: "ACTIVE",
-    phone: "01612345678",
-  },
-  {
-    id: "ee8ad47f-d795-4767-a7cc-95e82f6ad29b",
-    name: "Ruhul Amin Rahat",
-    email: "rahat@example.com",
-    role: "ADMIN",
-    createdAt: "2026-07-08T11:15:28.024Z",
-    profilePhoto: "https://i.pravatar.cc/300?img=1",
-    status: "ACTIVE",
-    phone: "01712345678",
-  },
-  {
-    id: "3d2d6f76-58fc-4983-b731-c70082373f56",
-    name: "Rakib Hossain",
-    email: "rakib@example.com",
-    role: "LANDLORD",
-    createdAt: "2026-07-08T11:17:59.231Z",
-    profilePhoto: null,
-    status: "ACTIVE",
-    phone: "01798765432",
-  },
-  {
-    id: "b5247966-df37-4f60-9bae-eeedef80d143",
-    name: "Sarah Williams",
-    email: "sarah@example.com",
-    role: "TENANT",
-    createdAt: "2026-07-30T19:04:39.513Z",
-    profilePhoto: "https://i.pravatar.cc/300?img=47",
-    status: "BLOCKED",
-    phone: "8801812345678",
-  },
-];
+export function UsersTable({ users, meta }: UsersTableProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [loadingId, setLoadingId] = useState<string | null>(null);
 
-export function UsersTable() {
-  const [users, setUsers] = useState<UserItem[]>(mockUsers);
+  const toggleUserStatus = async (user: TUser) => {
+    try {
+      setLoadingId(user.id);
+      const nextStatus = user.status === "ACTIVE" ? "BLOCKED" : "ACTIVE";
+      await updateUserStatus(user.id, { status: nextStatus });
+      router.refresh();
+    } catch (err) {
+      console.error("Failed to update status", err);
+    } finally {
+      setLoadingId(null);
+    }
+  };
 
-  const toggleUserStatus = (id: string) => {
-    setUsers((prev) =>
-      prev.map((user) => {
-        if (user.id === id) {
-          const nextStatus = user.status === "ACTIVE" ? "BLOCKED" : "ACTIVE";
-          return { ...user, status: nextStatus };
-        }
-        return user;
-      }),
-    );
+  const handlePageChange = (page: number) => {
+    const params = new URLSearchParams(searchParams);
+    params.set("page", page.toString());
+    router.replace(`${pathname}?${params.toString()}`);
   };
 
   return (
@@ -125,151 +78,137 @@ export function UsersTable() {
         <Table>
           <TableHeader className="bg-muted/50">
             <TableRow>
-              <TableHead className="w-62.5 text-xs font-semibold">
-                User
-              </TableHead>
+              <TableHead className="w-62.5 text-xs font-semibold">User</TableHead>
               <TableHead className="text-xs font-semibold">Phone</TableHead>
               <TableHead className="text-xs font-semibold">Role</TableHead>
               <TableHead className="text-xs font-semibold">Status</TableHead>
-              <TableHead className="text-xs font-semibold">
-                Joined Date
-              </TableHead>
-              <TableHead className="text-right text-xs font-semibold">
-                Actions
-              </TableHead>
+              <TableHead className="text-xs font-semibold">Joined Date</TableHead>
+              <TableHead className="text-right text-xs font-semibold">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {users.map((user) => {
-              const isBlocked =
-                user.status === "BLOCKED" || user.status === "BANNED";
-              const formattedDate = new Date(user.createdAt).toLocaleDateString(
-                "en-US",
-                {
+            {users.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center py-8 text-xs text-muted-foreground">
+                  No users found.
+                </TableCell>
+              </TableRow>
+            ) : (
+              users.map((user) => {
+                const isBlocked = user.status === "BLOCKED" || user.status === "BANNED";
+                const formattedDate = new Date(user.createdAt).toLocaleDateString("en-US", {
                   month: "short",
                   day: "numeric",
                   year: "numeric",
-                },
-              );
+                });
 
-              return (
-                <TableRow
-                  key={user.id}
-                  className="hover:bg-muted/40 transition-colors"
-                >
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <Avatar className="h-9 w-9 border border-border">
-                        <AvatarImage
-                          src={user.profilePhoto || undefined}
-                          alt={user.name}
-                        />
-                        <AvatarFallback className="text-xs font-semibold">
-                          {user.name.substring(0, 2).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex flex-col">
-                        <span className="text-xs font-semibold text-foreground leading-tight">
-                          {user.name}
-                        </span>
-                        <span className="text-[11px] text-muted-foreground leading-tight mt-0.5">
-                          {user.email}
-                        </span>
+                return (
+                  <TableRow key={user.id} className="hover:bg-muted/40 transition-colors">
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <Avatar className="h-9 w-9 border border-border">
+                          <AvatarImage src={user.profilePhoto || undefined} alt={user.name} />
+                          <AvatarFallback className="text-xs font-semibold">
+                            {user.name ? user.name.substring(0, 2).toUpperCase() : "U"}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex flex-col">
+                          <span className="text-xs font-semibold text-foreground leading-tight">
+                            {user.name}
+                          </span>
+                          <span className="text-[11px] text-muted-foreground leading-tight mt-0.5">
+                            {user.email}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  </TableCell>
+                    </TableCell>
 
-                  <TableCell className="text-xs font-mono text-muted-foreground">
-                    <span className="flex items-center gap-1.5">
-                      <Phone className="h-3 w-3 text-muted-foreground/70" />
-                      {user.phone}
-                    </span>
-                  </TableCell>
+                    <TableCell className="text-xs font-mono text-muted-foreground">
+                      <span className="flex items-center gap-1.5">
+                        <Phone className="h-3 w-3 text-muted-foreground/70" />
+                        {user.phone || "N/A"}
+                      </span>
+                    </TableCell>
 
-                  <TableCell>
-                    <Badge
-                      variant={
-                        user.role === "ADMIN"
-                          ? "default"
-                          : user.role === "LANDLORD"
+                    <TableCell>
+                      <Badge
+                        variant={
+                          user.role === "ADMIN"
+                            ? "default"
+                            : user.role === "LANDLORD"
                             ? "secondary"
                             : "outline"
-                      }
-                      className="text-[10px] px-2 py-0.5 font-mono"
-                    >
-                      {user.role === "ADMIN" && (
-                        <Shield className="h-2.5 w-2.5 mr-1 inline" />
-                      )}
-                      {user.role === "LANDLORD" && (
-                        <UserIcon className="h-2.5 w-2.5 mr-1 inline" />
-                      )}
-                      {user.role}
-                    </Badge>
-                  </TableCell>
+                        }
+                        className="text-[10px] px-2 py-0.5 font-mono"
+                      >
+                        {user.role === "ADMIN" && <Shield className="h-2.5 w-2.5 mr-1 inline" />}
+                        {user.role === "LANDLORD" && <UserIcon className="h-2.5 w-2.5 mr-1 inline" />}
+                        {user.role}
+                      </Badge>
+                    </TableCell>
 
-                  <TableCell>
-                    <Badge
-                      variant="outline"
-                      className={
-                        isBlocked
-                          ? "border-destructive/40 bg-destructive/10 text-destructive text-[10px] px-2 py-0.5 font-semibold"
-                          : "border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] px-2 py-0.5 font-semibold"
-                      }
-                    >
-                      {isBlocked ? "BANNED" : "ACTIVE"}
-                    </Badge>
-                  </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant="outline"
+                        className={
+                          isBlocked
+                            ? "border-destructive/40 bg-destructive/10 text-destructive text-[10px] px-2 py-0.5 font-semibold"
+                            : "border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] px-2 py-0.5 font-semibold"
+                        }
+                      >
+                        {isBlocked ? "BANNED" : "ACTIVE"}
+                      </Badge>
+                    </TableCell>
 
-                  <TableCell className="text-xs text-muted-foreground font-mono">
-                    <span className="flex items-center gap-1.5">
-                      <Calendar className="h-3 w-3" />
-                      {formattedDate}
-                    </span>
-                  </TableCell>
+                    <TableCell className="text-xs text-muted-foreground font-mono">
+                      <span className="flex items-center gap-1.5">
+                        <Calendar className="h-3 w-3" />
+                        {formattedDate}
+                      </span>
+                    </TableCell>
 
-                  <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <MoreHorizontal className="h-4 w-4" />
-                          <span className="sr-only">Open menu</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-44">
-                        <DropdownMenuLabel className="text-[11px]">
-                          Actions
-                        </DropdownMenuLabel>
-                        <DropdownMenuItem className="text-xs cursor-pointer">
-                          <Eye className="mr-2 h-3.5 w-3.5" />
-                          View Profile
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                          onClick={() => toggleUserStatus(user.id)}
-                          className={
-                            isBlocked
-                              ? "text-xs cursor-pointer text-emerald-600 focus:text-emerald-600 font-medium"
-                              : "text-xs cursor-pointer text-destructive focus:text-destructive font-medium"
-                          }
-                        >
-                          {isBlocked ? (
-                            <>
-                              <CheckCircle2 className="mr-2 h-3.5 w-3.5" />
-                              Unban User
-                            </>
-                          ) : (
-                            <>
-                              <Ban className="mr-2 h-3.5 w-3.5" />
-                              Ban User
-                            </>
-                          )}
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
+                    <TableCell className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger>
+                          <Button variant="ghost" size="icon" className="h-8 w-8" disabled={loadingId === user.id}>
+                            <MoreHorizontal className="h-4 w-4" />
+                            <span className="sr-only">Open menu</span>
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-44">
+                          <DropdownMenuLabel className="text-[11px]">Actions</DropdownMenuLabel>
+                          <DropdownMenuItem className="text-xs cursor-pointer">
+                            <Eye className="mr-2 h-3.5 w-3.5" />
+                            View Profile
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            onClick={() => toggleUserStatus(user)}
+                            className={
+                              isBlocked
+                                ? "text-xs cursor-pointer text-emerald-600 focus:text-emerald-600 font-medium"
+                                : "text-xs cursor-pointer text-destructive focus:text-destructive font-medium"
+                            }
+                          >
+                            {isBlocked ? (
+                              <>
+                                <CheckCircle2 className="mr-2 h-3.5 w-3.5" />
+                                Unban User
+                              </>
+                            ) : (
+                              <>
+                                <Ban className="mr-2 h-3.5 w-3.5" />
+                                Ban User
+                              </>
+                            )}
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                );
+              })
+            )}
           </TableBody>
         </Table>
       </div>
@@ -277,29 +216,52 @@ export function UsersTable() {
       {/* Pagination Footer */}
       <div className="flex items-center justify-between px-2 pt-2">
         <p className="text-xs text-muted-foreground font-mono">
-          Showing <span className="font-semibold text-foreground">1-5</span> of{" "}
-          <span className="font-semibold text-foreground">12</span> users
+          Showing <span className="font-semibold text-foreground">{users.length}</span> of{" "}
+          <span className="font-semibold text-foreground">{meta.total}</span> users
         </p>
-        <Pagination className="w-auto m-0">
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious href="#" className="h-8 text-xs" />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href="#" isActive className="h-8 w-8 text-xs">
-                1
-              </PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href="#" className="h-8 w-8 text-xs">
-                2
-              </PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationNext href="#" className="h-8 text-xs" />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
+        {meta.totalPages > 1 && (
+          <Pagination className="w-auto m-0">
+            <PaginationContent>
+              <PaginationItem>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-8 text-xs"
+                  disabled={meta.page <= 1}
+                  onClick={() => handlePageChange(meta.page - 1)}
+                >
+                  Previous
+                </Button>
+              </PaginationItem>
+              {Array.from({ length: meta.totalPages }, (_, i) => i + 1).map((p) => (
+                <PaginationItem key={p}>
+                  <PaginationLink
+                    href="#"
+                    isActive={p === meta.page}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handlePageChange(p);
+                    }}
+                    className="h-8 w-8 text-xs"
+                  >
+                    {p}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+              <PaginationItem>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-8 text-xs"
+                  disabled={meta.page >= meta.totalPages}
+                  onClick={() => handlePageChange(meta.page + 1)}
+                >
+                  Next
+                </Button>
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        )}
       </div>
     </div>
   );
