@@ -19,7 +19,6 @@ interface Props {
 export default async function PropertiesPage({ searchParams }: Props) {
   const params = await searchParams;
 
-  console.log("SERVER PARAMS:", params);
 
   const facilitiesParam = params.facilities
     ? Array.isArray(params.facilities)
@@ -29,7 +28,7 @@ export default async function PropertiesPage({ searchParams }: Props) {
 
   const query = {
     page: params.page || 1,
-    limit: params.limit || 2,
+    limit: params.limit || 10,
     searchTerm: params.searchTerm,
     category: params.category,
     rentAmount: params.rentAmount,
@@ -44,13 +43,12 @@ export default async function PropertiesPage({ searchParams }: Props) {
 
   console.log("PAGE RENDER", paramsDATA);
 
-  // Fetch only properties using the constructed query
   const response = await getAllProperty(query);
 
   const properties = response?.data?.data || [];
   const meta = response?.data?.meta || {
     page: 1,
-    limit: 2,
+    limit: 10,
     total: 0,
     totalPage: 1,
   };
