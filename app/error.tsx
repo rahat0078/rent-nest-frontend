@@ -13,7 +13,7 @@ interface GlobalErrorProps {
 export default function Error({ error, reset }: GlobalErrorProps) {
   useEffect(() => {
     // Log runtime error to an error reporting service
-    console.error("Global Application Error:", error);
+    // console.error("Global Application Error:", error);
   }, [error]);
 
   return (

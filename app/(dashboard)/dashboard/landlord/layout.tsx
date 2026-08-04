@@ -6,9 +6,9 @@ export default function LandlordLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="flex h-screen bg-background overflow-hidden">
+    <div className="flex h-screen bg-background">
       <LandlordSidebar />
-      <div className="flex-1 flex flex-col overflow-hidden lg:ml-0">
+      <div className="flex-1 flex flex-col lg:ml-0">
         {children}
       </div>
     </div>

@@ -1,128 +1,206 @@
-'use client'
+"use client";
 
-import { LandlordHeader } from '@/components/dashboard/landlord/landlord-header'
-import { PropertyCard } from '@/components/dashboard/landlord/property-card'
-import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { Plus } from 'lucide-react'
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { Edit2, Plus, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
-const PROPERTIES = [
-  {
-    id: '1',
-    image: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&h=300&fit=crop',
-    title: 'Luxury Apartment Downtown',
-    category: 'Apartment',
-    location: 'Downtown, New York',
-    rent: 3500,
-    bedrooms: 2,
-    bathrooms: 2,
-    size: 1200,
-    available: true,
-    createdDate: '2 days ago',
-  },
-  {
-    id: '2',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&h=300&fit=crop',
-    title: 'Modern Studio',
-    category: 'Studio',
-    location: 'Upper East Side',
-    rent: 1800,
-    bedrooms: 0,
-    bathrooms: 1,
-    size: 600,
-    available: true,
-    createdDate: '5 days ago',
-  },
-  {
-    id: '3',
-    image: 'https://images.unsplash.com/photo-1560440021-33f237b74148?w=400&h=300&fit=crop',
-    title: 'Spacious Family Home',
-    category: 'Family House',
-    location: 'Brooklyn Heights',
-    rent: 4200,
-    bedrooms: 4,
-    bathrooms: 3,
-    size: 2500,
-    available: false,
-    createdDate: '1 week ago',
-  },
-  {
-    id: '4',
-    image: 'https://images.unsplash.com/photo-1545324418-cc1a6f50f35f?w=400&h=300&fit=crop',
-    title: 'Cozy 1-Bedroom Apartment',
-    category: 'Apartment',
-    location: 'Queens, New York',
-    rent: 2200,
-    bedrooms: 1,
-    bathrooms: 1,
-    size: 750,
-    available: true,
-    createdDate: '3 weeks ago',
-  },
-  {
-    id: '5',
-    image: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=400&h=300&fit=crop',
-    title: 'Elegant Duplex',
-    category: 'Duplex',
-    location: 'Manhattan',
-    rent: 5500,
-    bedrooms: 3,
-    bathrooms: 2,
-    size: 1800,
-    available: true,
-    createdDate: '1 month ago',
-  },
-  {
-    id: '6',
-    image: 'https://images.unsplash.com/photo-1522859185100-19f1b9ae4ac0?w=400&h=300&fit=crop',
-    title: 'Office Space Downtown',
-    category: 'Office Space',
-    location: 'Financial District',
-    rent: 3000,
-    bedrooms: 0,
-    bathrooms: 2,
-    size: 1500,
-    available: true,
-    createdDate: '2 months ago',
-  },
-]
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
+import {
+  getMyProperties,
+  TPropertyResponseLandlordOwn,
+} from "../_landlordActions.ts/getMyProperties";
+import { updateProperty } from "../_landlordActions.ts/updateProperty";
+import { LandlordHeader } from "@/components/dashboard/landlord/landlord-header";
 
 export default function PropertiesPage() {
+  const [properties, setProperties] = useState<TPropertyResponseLandlordOwn[]>(
+    [],
+  );
+  const [loading, setLoading] = useState(true);
+  const [togglingId, setTogglingId] = useState<string | null>(null);
+
+  // 1. Declare fetchProperties BEFORE useEffect to fix variable access order
+  useEffect(() => {
+    (async () => {
+      try {
+        setLoading(true);
+        const res = await getMyProperties();
+        if (res?.data) {
+          setProperties(res.data);
+        }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (error: any) {
+        toast.error(error.message || "Could not load properties");
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+  const handleToggleAvailability = async (
+    id: string,
+    currentStatus: boolean,
+  ) => {
+    const nextStatus = !currentStatus;
+
+    // Optimistic UI Update
+    setProperties((prev) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, isAvailable: nextStatus } : item,
+      ),
+    );
+    setTogglingId(id);
+
+    try {
+      await updateProperty(id, { isAvailable: nextStatus });
+      toast.success(
+        `Property marked as ${nextStatus ? "Available" : "Unavailable"}`,
+      );
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      // Revert Optimistic Update on failure
+      setProperties((prev) =>
+        prev.map((item) =>
+          item.id === id ? { ...item, isAvailable: currentStatus } : item,
+        ),
+      );
+      toast.error(error.message || "Failed to update availability");
+    } finally {
+      setTogglingId(null);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
   return (
-    <>
-      <LandlordHeader
-        title="My Properties"
-        description="Manage and monitor all your rental properties"
-      />
+    <div className="space-y-6">
+      <div>
+        <LandlordHeader
+          title="Dashboard"
+          description="Welcome back! Here's an overview of your rental business."
+        />
+      </div>
 
-      <div className="flex-1 overflow-y-auto">
-        <div className="p-6 space-y-6">
-          {/* Header with Create Button */}
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-lg font-semibold text-foreground">
-                Total Properties: {PROPERTIES.length}
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                {PROPERTIES.filter((p) => p.available).length} available for rent
-              </p>
-            </div>
-            <Link href="/dashboard/landlord/properties/new">
-              <Button className="gap-2">
-                <Plus className="w-4 h-4" />
-                Create Property
-              </Button>
-            </Link>
+      <div className="flex items-center justify-between px-4 md:px-6 lg:px-10">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight">My Properties</h2>
+          <p className="text-sm text-muted-foreground">
+            Manage your listed properties and availability.
+          </p>
+        </div>
+        <Button>
+          <Link href="/dashboard/landlord/properties/new" className="flex justify-center items-center gap-2">
+            <Plus className="h-4 w-4" /> Add Property
+          </Link>                                                                                             
+        </Button>
+      </div>
+
+      <div className="px-4 md:px-6 lg:px-10">
+        {properties.length === 0 ? (
+          <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border p-12 text-center">
+            <p className="text-lg font-medium">No properties found</p>
+            <p className="text-sm text-muted-foreground mt-1 mb-4">
+              You have not listed any properties yet.
+            </p>
+            <Button className="flex justify-center items-center gap-2">
+              <Link href="/dashboard/landlord/properties/new">
+                <Plus className="mr-2 h-4 w-4" /> Add Property
+              </Link>
+            </Button>
           </div>
-
-          {/* Properties Grid */}
+        ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {PROPERTIES.map((property) => (
-              <PropertyCard key={property.id} {...property} />
+            {properties.map((property) => (
+              <div
+                key={property.id}
+                className="overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-all hover:shadow-md"
+              >
+                <div className="relative h-48 w-full bg-muted">
+                  <Image
+                    unoptimized
+                    src={property.images}
+                    alt={property.title}
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute top-3 right-3">
+                    <Badge
+                      variant={property.isAvailable ? "default" : "secondary"}
+                      className={
+                        property.isAvailable
+                          ? "bg-emerald-500/90 hover:bg-emerald-500 text-white"
+                          : "bg-muted-foreground/80 text-white"
+                      }
+                    >
+                      {property.isAvailable ? "Available" : "Occupied / Off"}
+                    </Badge>
+                  </div>
+                </div>
+
+                <div className="p-5 space-y-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <h3 className="font-semibold text-lg line-clamp-1 text-foreground">
+                      {property.title}
+                    </h3>
+                  </div>
+
+                  <p className="text-sm text-muted-foreground line-clamp-1">
+                    {property.location}
+                  </p>
+
+                  <div className="flex items-baseline justify-between pt-2 border-t border-border">
+                    <div>
+                      <span className="text-xl font-bold text-foreground">
+                        ${property.rentAmount}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {" "}
+                        / month
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-muted-foreground">
+                          Available
+                        </span>
+                        <Switch
+                          checked={property.isAvailable}
+                          disabled={togglingId === property.id}
+                          onCheckedChange={() =>
+                            handleToggleAvailability(
+                              property.id,
+                              property.isAvailable,
+                            )
+                          }
+                        />
+                      </div>
+
+                      <Button variant="outline" size="icon" className="h-8 w-8">
+                        <Link
+                          href={`/dashboard/landlord/properties/${property.id}/edit`}
+                        >
+                          <Edit2 className="h-4 w-4" />
+                        </Link>
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
-        </div>
+        )}
       </div>
-    </>
-  )
+    </div>
+  );
 }

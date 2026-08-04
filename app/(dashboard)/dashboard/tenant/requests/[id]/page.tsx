@@ -79,7 +79,6 @@ export default async function RentalRequestDetailsPage({
   }
 
   const { property } = request.data;
-  console.log(request)
 
   return (
     <main className="min-h-screen bg-background py-8">

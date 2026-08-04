@@ -1,36 +1,49 @@
-'use client'
+import { FileText, CheckCircle2, Home, Trophy } from "lucide-react";
+import QuickActions from "@/components/dashboard/tenant/quick-actions";
+import StatsCard from "@/components/dashboard/tenant/stat-card";
+import { getTenantRentalStat } from "./_tenantActions/getTenantStats";
 
-import { FileText, CheckCircle2, Home, Trophy } from 'lucide-react'
-import QuickActions from '@/components/dashboard/tenant/quick-actions'
-import StatsCard from '@/components/dashboard/tenant/stat-card'
+interface TenantRentalStats {
+  totalRequests?: number;
+  approvedRequests?: number;
+  activeRentals?: number;
+  completedRentals?: number;
+}
 
-export default function TenantDashboardPage() {
+export default async function TenantDashboardPage() {
+  const response = await getTenantRentalStat();
+  const data: TenantRentalStats = response?.data || {};
+
   const stats = [
     {
       icon: FileText,
-      title: 'Total Requests',
-      value: '12',
-      description: 'Rental requests submitted',
+      title: "Total Requests",
+      value: String(data.totalRequests ?? 0),
+      description: "Rental requests submitted",
+      color: "text-blue-600",
     },
     {
       icon: CheckCircle2,
-      title: 'Approved Requests',
-      value: '8',
-      description: 'Successfully approved',
+      title: "Approved Requests",
+      value: String(data.approvedRequests ?? 0),
+      description: "Successfully approved",
+      color: "text-green-600",
     },
     {
       icon: Home,
-      title: 'Active Rentals',
-      value: '2',
-      description: 'Currently active leases',
+      title: "Active Rentals",
+      value: String(data.activeRentals ?? 0),
+      description: "Currently active leases",
+      color: "text-orange-600",
     },
     {
       icon: Trophy,
-      title: 'Completed Rentals',
-      value: '5',
-      description: 'Successfully completed',
+      title: "Completed Rentals",
+      value: String(data.completedRentals ?? 0),
+      description: "Successfully completed",
+      color: "text-yellow-600",
     },
-  ]
+  ];
 
   return (
     <div className="space-y-8">
@@ -44,5 +57,5 @@ export default function TenantDashboardPage() {
       {/* Quick Actions */}
       <QuickActions />
     </div>
-  )
+  );
 }

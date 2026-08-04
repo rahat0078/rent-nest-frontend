@@ -33,7 +33,7 @@ export function PropertyFilters() {
         const res = await getAllCategory();
         setCategories(res.data);
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     };
 
