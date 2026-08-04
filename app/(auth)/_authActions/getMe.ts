@@ -1,3 +1,5 @@
+"use server"
+
 import { fetcher } from "@/lib/fetcher";
 import { cookies } from "next/headers";
 

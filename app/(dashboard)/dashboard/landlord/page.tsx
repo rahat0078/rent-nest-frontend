@@ -1,6 +1,5 @@
 "use client";
 
-import { LandlordHeader } from "@/components/dashboard/landlord/landlord-header";
 import { StatCard } from "@/components/dashboard/landlord/stat-card";
 import { PropertyCard } from "@/components/dashboard/landlord/property-card";
 import { RentalRequestCard } from "@/components/dashboard/landlord/rental-request-card";
@@ -14,6 +13,7 @@ import {
   DollarSign,
   ArrowRight,
 } from "lucide-react";
+import { LandlordHeader } from "@/components/dashboard/landlord/landlord-header";
 
 const STATS = [
   { icon: Building2, label: "Total Properties", value: "12", trend: 8 },
