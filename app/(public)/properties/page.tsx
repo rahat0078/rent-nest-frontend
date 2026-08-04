@@ -39,9 +39,7 @@ export default async function PropertiesPage({ searchParams }: Props) {
     facilities: facilitiesParam,
   };
 
-  const paramsDATA = await searchParams;
 
-  console.log("PAGE RENDER", paramsDATA);
 
   const response = await getAllProperty(query);
 

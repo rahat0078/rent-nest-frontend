@@ -1,19 +1,13 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { getAllCategory } from "@/app/(public)/_propertyActions/getAllCategory";
+import { ICategory } from "@/types/category";
 
-// Static categories mapping - REPLACE THESE UUIDs with the actual IDs from your backend database
-const STATIC_CATEGORIES = [
-  { id: "11111111-1111-1111-1111-111111111111", name: "Apartment" },
-  { id: "22222222-2222-2222-2222-222222222222", name: "Studio" },
-  { id: "33333333-3333-3333-3333-333333333333", name: "Villa" },
-  { id: "44444444-4444-4444-4444-444444444444", name: "Family House" },
-  { id: "55555555-5555-5555-5555-555555555555", name: "Duplex" },
-  { id: "66666666-6666-6666-6666-666666666666", name: "Office" },
-];
+
 
 const SORT_OPTIONS = [
   { label: "Newest", sortBy: "createdAt", sortOrder: "desc" },
@@ -31,6 +25,22 @@ const COMMON_FACILITIES = [
 ];
 
 export function PropertyFilters() {
+  const [categories, setCategories] = useState<ICategory[]>([]);
+
+    useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await getAllCategory();
+        setCategories(res.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
@@ -127,7 +137,7 @@ export function PropertyFilters() {
           Category
         </label>
         <div className="flex flex-wrap gap-2">
-          {STATIC_CATEGORIES.map((cat) => (
+          {categories.map((cat) => (
             <Badge
               key={cat.id}
               variant={categoryId === cat.id ? "default" : "outline"}
