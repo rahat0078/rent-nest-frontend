@@ -11,6 +11,7 @@ import {
   ChevronLeft,
   ChevronRight,
   LogOut,
+  HomeIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
@@ -45,6 +46,7 @@ export default function TenantSidebar({
     },
     { label: "Reviews", icon: Star, href: "/dashboard/tenant/reviews" },
     { label: "Profile", icon: User, href: "/dashboard/tenant/profile" },
+    { label: "Back Home", icon: HomeIcon, href: "/" },
   ];
 
   return (

@@ -164,6 +164,7 @@ export default async function PropertyDetailsPage({
           {/* Right Column - Summary Card */}
           <div className="lg:col-span-1">
             <PropertySummaryCard
+              propertyId={property.id}
               rentAmount={property.rentAmount}
               isAvailable={property.isAvailable}
               category={property.category.name}
