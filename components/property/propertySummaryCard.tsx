@@ -30,7 +30,7 @@ export function PropertySummaryCard({
 }: PropertySummaryCardProps) {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  
+
   // Form State
   const [moveInDate, setMoveInDate] = useState("");
   const [message, setMessage] = useState("");
@@ -126,8 +126,8 @@ export function PropertySummaryCard({
       {/* Action Buttons & Dropdown Form */}
       <div className="space-y-4">
         {isAvailable ? (
-          <Button 
-            className="w-full transition-all" 
+          <Button
+            className="w-full transition-all"
             onClick={() => setIsFormOpen(!isFormOpen)}
           >
             {isFormOpen ? "Cancel Request" : "Request Rental"}
@@ -152,7 +152,7 @@ export function PropertySummaryCard({
                 onChange={(e) => setMoveInDate(e.target.value)}
               />
             </div>
-            
+
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">
                 Message (Optional)
@@ -166,9 +166,9 @@ export function PropertySummaryCard({
               />
             </div>
 
-            <Button 
-              className="w-full" 
-              onClick={handleRequestSubmit} 
+            <Button
+              className="w-full"
+              onClick={handleRequestSubmit}
               disabled={isLoading}
             >
               {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
@@ -177,7 +177,11 @@ export function PropertySummaryCard({
           </div>
         )}
 
-        <Button disabled variant="outline" className="w-full flex items-center gap-2">
+        <Button
+          disabled
+          variant="outline"
+          className="w-full flex items-center gap-2"
+        >
           <Heart className="w-4 h-4" />
           Save Property
         </Button>

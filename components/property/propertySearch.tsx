@@ -22,7 +22,6 @@ export function PropertySearch() {
         params.delete("searchTerm");
       }
 
-
       const newUrl = `/properties?${params.toString()}`;
       router.replace(newUrl, { scroll: false });
     }, 500);

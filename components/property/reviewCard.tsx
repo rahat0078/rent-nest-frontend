@@ -1,13 +1,13 @@
-'use client'
+"use client";
 
-import { Star } from 'lucide-react'
-import Image from 'next/image'
+import { Star } from "lucide-react";
+import Image from "next/image";
 
 interface ReviewCardProps {
-  avatar: string
-  name: string
-  rating: number
-  text: string
+  avatar: string;
+  name: string;
+  rating: number;
+  text: string;
 }
 
 export function ReviewCard({ avatar, name, rating, text }: ReviewCardProps) {
@@ -16,7 +16,7 @@ export function ReviewCard({ avatar, name, rating, text }: ReviewCardProps) {
       {/* Header with Avatar and Name */}
       <div className="flex items-center gap-4 mb-4">
         <Image
-        unoptimized
+          unoptimized
           src={avatar}
           alt={name}
           width={48}
@@ -31,8 +31,8 @@ export function ReviewCard({ avatar, name, rating, text }: ReviewCardProps) {
                 key={i}
                 className={`w-4 h-4 ${
                   i < rating
-                    ? 'fill-accent text-accent'
-                    : 'fill-muted text-muted'
+                    ? "fill-accent text-accent"
+                    : "fill-muted text-muted"
                 }`}
               />
             ))}
@@ -43,5 +43,5 @@ export function ReviewCard({ avatar, name, rating, text }: ReviewCardProps) {
       {/* Review Text */}
       <p className="text-muted-foreground leading-relaxed">{text}</p>
     </div>
-  )
+  );
 }

@@ -92,7 +92,7 @@ export default function PropertyCard({
         <div className="flex items-center justify-between gap-4">
           <div>
             <p className="text-sm text-muted-foreground">Monthly Rent</p>
-            <p className="text-2xl font-bold text-primary"> ৳{rentAmount}</p>
+            <p className="text-2xl font-bold text-primary"> ${rentAmount}</p>
           </div>
           <Link href={`/properties/${id}`}>
             <Button

@@ -1,32 +1,32 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { Badge } from '@/components/ui/badge'
-import { Card } from '@/components/ui/card'
-import { X, Loader2 } from 'lucide-react'
-import { propertyFormSchema, type PropertyFormData } from '@/schemas/property'
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
+import { X, Loader2 } from "lucide-react";
+import { propertyFormSchema, type PropertyFormData } from "@/schemas/property";
 
 interface PropertyFormProps {
-  mode: 'create' | 'edit'
-  initialData?: Partial<PropertyFormData>
-  onSubmit: (data: PropertyFormData) => Promise<void>
-  onCancel: () => void
-  isLoading?: boolean
+  mode: "create" | "edit";
+  initialData?: Partial<PropertyFormData>;
+  onSubmit: (data: PropertyFormData) => Promise<void>;
+  onCancel: () => void;
+  isLoading?: boolean;
 }
 
 const CATEGORIES = [
-  { value: 'apartment', label: 'Apartment' },
-  { value: 'studio', label: 'Studio' },
-  { value: 'villa', label: 'Villa' },
-  { value: 'family-house', label: 'Family House' },
-  { value: 'duplex', label: 'Duplex' },
-  { value: 'office-space', label: 'Office Space' },
-]
+  { value: "apartment", label: "Apartment" },
+  { value: "studio", label: "Studio" },
+  { value: "villa", label: "Villa" },
+  { value: "family-house", label: "Family House" },
+  { value: "duplex", label: "Duplex" },
+  { value: "office-space", label: "Office Space" },
+];
 
 export function PropertyForm({
   mode,
@@ -35,8 +35,10 @@ export function PropertyForm({
   onCancel,
   isLoading = false,
 }: PropertyFormProps) {
-  const [facilities, setFacilities] = useState<string[]>(initialData?.facilities || [])
-  const [facilityInput, setFacilityInput] = useState('')
+  const [facilities, setFacilities] = useState<string[]>(
+    initialData?.facilities || [],
+  );
+  const [facilityInput, setFacilityInput] = useState("");
 
   const {
     register,
@@ -46,47 +48,47 @@ export function PropertyForm({
   } = useForm<PropertyFormData>({
     resolver: zodResolver(propertyFormSchema),
     defaultValues: {
-      categoryId: initialData?.categoryId || '',
-      title: initialData?.title || '',
-      description: initialData?.description || '',
-      location: initialData?.location || '',
+      categoryId: initialData?.categoryId || "",
+      title: initialData?.title || "",
+      description: initialData?.description || "",
+      location: initialData?.location || "",
       bedrooms: initialData?.bedrooms || 1,
       bathrooms: initialData?.bathrooms || 1,
       rentAmount: initialData?.rentAmount || 1000,
       sizeSqFt: initialData?.sizeSqFt || 1000,
       facilities: initialData?.facilities || [],
-      images: initialData?.images || '',
+      images: initialData?.images || "",
       isAvailable: initialData?.isAvailable ?? true,
     },
-  })
+  });
 
   const handleAddFacility = () => {
-    const trimmed = facilityInput.trim()
+    const trimmed = facilityInput.trim();
     if (trimmed && !facilities.includes(trimmed)) {
-      const newFacilities = [...facilities, trimmed]
-      setFacilities(newFacilities)
-      setValue('facilities', newFacilities, { shouldValidate: true })
-      setFacilityInput('')
+      const newFacilities = [...facilities, trimmed];
+      setFacilities(newFacilities);
+      setValue("facilities", newFacilities, { shouldValidate: true });
+      setFacilityInput("");
     }
-  }
+  };
 
   const handleRemoveFacility = (facilityToRemove: string) => {
-    const newFacilities = facilities.filter((f) => f !== facilityToRemove)
-    setFacilities(newFacilities)
-    setValue('facilities', newFacilities, { shouldValidate: true })
-  }
+    const newFacilities = facilities.filter((f) => f !== facilityToRemove);
+    setFacilities(newFacilities);
+    setValue("facilities", newFacilities, { shouldValidate: true });
+  };
 
   const handleFormSubmit = async (data: PropertyFormData) => {
-    await onSubmit(data)
-  }
+    await onSubmit(data);
+  };
 
-  const isProcessing = isSubmitting || isLoading
+  const isProcessing = isSubmitting || isLoading;
 
   return (
     <div className="max-w-2xl mx-auto">
       <Card className="p-6 md:p-8">
         <h1 className="text-2xl md:text-3xl font-bold mb-6">
-          {mode === 'create' ? 'Create New Property' : 'Edit Property'}
+          {mode === "create" ? "Create New Property" : "Edit Property"}
         </h1>
 
         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
@@ -96,7 +98,7 @@ export function PropertyForm({
               Category <span className="text-red-500">*</span>
             </label>
             <select
-              {...register('categoryId')}
+              {...register("categoryId")}
               className="w-full px-3 py-2 border border-input rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
             >
               <option value="">Select a category</option>
@@ -107,7 +109,9 @@ export function PropertyForm({
               ))}
             </select>
             {errors.categoryId && (
-              <p className="text-sm text-red-500 mt-1">{errors.categoryId.message}</p>
+              <p className="text-sm text-red-500 mt-1">
+                {errors.categoryId.message}
+              </p>
             )}
           </div>
 
@@ -117,12 +121,14 @@ export function PropertyForm({
               Property Title <span className="text-red-500">*</span>
             </label>
             <Input
-              {...register('title')}
+              {...register("title")}
               placeholder="e.g., Cozy 2-Bedroom Apartment"
-              className={errors.title ? 'border-red-500' : ''}
+              className={errors.title ? "border-red-500" : ""}
             />
             {errors.title && (
-              <p className="text-sm text-red-500 mt-1">{errors.title.message}</p>
+              <p className="text-sm text-red-500 mt-1">
+                {errors.title.message}
+              </p>
             )}
           </div>
 
@@ -132,13 +138,15 @@ export function PropertyForm({
               Description <span className="text-red-500">*</span>
             </label>
             <Textarea
-              {...register('description')}
+              {...register("description")}
               placeholder="Provide a detailed description of your property..."
               rows={5}
-              className={errors.description ? 'border-red-500' : ''}
+              className={errors.description ? "border-red-500" : ""}
             />
             {errors.description && (
-              <p className="text-sm text-red-500 mt-1">{errors.description.message}</p>
+              <p className="text-sm text-red-500 mt-1">
+                {errors.description.message}
+              </p>
             )}
           </div>
 
@@ -148,12 +156,14 @@ export function PropertyForm({
               Location <span className="text-red-500">*</span>
             </label>
             <Input
-              {...register('location')}
+              {...register("location")}
               placeholder="e.g., Downtown, San Francisco, CA"
-              className={errors.location ? 'border-red-500' : ''}
+              className={errors.location ? "border-red-500" : ""}
             />
             {errors.location && (
-              <p className="text-sm text-red-500 mt-1">{errors.location.message}</p>
+              <p className="text-sm text-red-500 mt-1">
+                {errors.location.message}
+              </p>
             )}
           </div>
 
@@ -164,14 +174,16 @@ export function PropertyForm({
                 Bedrooms <span className="text-red-500">*</span>
               </label>
               <Input
-                {...register('bedrooms', { valueAsNumber: true })}
+                {...register("bedrooms", { valueAsNumber: true })}
                 type="number"
                 min="1"
                 max="10"
-                className={errors.bedrooms ? 'border-red-500' : ''}
+                className={errors.bedrooms ? "border-red-500" : ""}
               />
               {errors.bedrooms && (
-                <p className="text-sm text-red-500 mt-1">{errors.bedrooms.message}</p>
+                <p className="text-sm text-red-500 mt-1">
+                  {errors.bedrooms.message}
+                </p>
               )}
             </div>
             <div>
@@ -179,14 +191,16 @@ export function PropertyForm({
                 Bathrooms <span className="text-red-500">*</span>
               </label>
               <Input
-                {...register('bathrooms', { valueAsNumber: true })}
+                {...register("bathrooms", { valueAsNumber: true })}
                 type="number"
                 min="1"
                 max="10"
-                className={errors.bathrooms ? 'border-red-500' : ''}
+                className={errors.bathrooms ? "border-red-500" : ""}
               />
               {errors.bathrooms && (
-                <p className="text-sm text-red-500 mt-1">{errors.bathrooms.message}</p>
+                <p className="text-sm text-red-500 mt-1">
+                  {errors.bathrooms.message}
+                </p>
               )}
             </div>
           </div>
@@ -198,13 +212,15 @@ export function PropertyForm({
                 Monthly Rent ($) <span className="text-red-500">*</span>
               </label>
               <Input
-                {...register('rentAmount', { valueAsNumber: true })}
+                {...register("rentAmount", { valueAsNumber: true })}
                 type="number"
                 min="1"
-                className={errors.rentAmount ? 'border-red-500' : ''}
+                className={errors.rentAmount ? "border-red-500" : ""}
               />
               {errors.rentAmount && (
-                <p className="text-sm text-red-500 mt-1">{errors.rentAmount.message}</p>
+                <p className="text-sm text-red-500 mt-1">
+                  {errors.rentAmount.message}
+                </p>
               )}
             </div>
             <div>
@@ -212,13 +228,15 @@ export function PropertyForm({
                 Size (sq ft) <span className="text-red-500">*</span>
               </label>
               <Input
-                {...register('sizeSqFt', { valueAsNumber: true })}
+                {...register("sizeSqFt", { valueAsNumber: true })}
                 type="number"
                 min="1"
-                className={errors.sizeSqFt ? 'border-red-500' : ''}
+                className={errors.sizeSqFt ? "border-red-500" : ""}
               />
               {errors.sizeSqFt && (
-                <p className="text-sm text-red-500 mt-1">{errors.sizeSqFt.message}</p>
+                <p className="text-sm text-red-500 mt-1">
+                  {errors.sizeSqFt.message}
+                </p>
               )}
             </div>
           </div>
@@ -233,9 +251,9 @@ export function PropertyForm({
                 value={facilityInput}
                 onChange={(e) => setFacilityInput(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault()
-                    handleAddFacility()
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleAddFacility();
                   }
                 }}
                 placeholder="Add a facility (e.g., WiFi, Gym, Pool)"
@@ -250,7 +268,9 @@ export function PropertyForm({
               </Button>
             </div>
             {errors.facilities && (
-              <p className="text-sm text-red-500 mb-2">{errors.facilities.message}</p>
+              <p className="text-sm text-red-500 mb-2">
+                {errors.facilities.message}
+              </p>
             )}
             {facilities.length > 0 && (
               <div className="flex flex-wrap gap-2">
@@ -280,25 +300,30 @@ export function PropertyForm({
               Image URL <span className="text-red-500">*</span>
             </label>
             <Input
-              {...register('images')}
+              {...register("images")}
               placeholder="https://example.com/image.jpg"
-              className={errors.images ? 'border-red-500' : ''}
+              className={errors.images ? "border-red-500" : ""}
             />
             {errors.images && (
-              <p className="text-sm text-red-500 mt-1">{errors.images.message}</p>
+              <p className="text-sm text-red-500 mt-1">
+                {errors.images.message}
+              </p>
             )}
           </div>
 
           {/* Availability Toggle (Edit Mode Only) */}
-          {mode === 'edit' && (
+          {mode === "edit" && (
             <div className="flex items-center gap-3 p-4 bg-secondary rounded-lg">
               <input
                 type="checkbox"
-                {...register('isAvailable')}
+                {...register("isAvailable")}
                 id="isAvailable"
                 className="w-4 h-4 rounded"
               />
-              <label htmlFor="isAvailable" className="text-sm font-medium cursor-pointer">
+              <label
+                htmlFor="isAvailable"
+                className="text-sm font-medium cursor-pointer"
+              >
                 Property is available for rent
               </label>
             </div>
@@ -306,18 +331,16 @@ export function PropertyForm({
 
           {/* Form Actions */}
           <div className="flex gap-3 pt-4">
-            <Button
-              type="submit"
-              disabled={isProcessing}
-              className="flex-1"
-            >
+            <Button type="submit" disabled={isProcessing} className="flex-1">
               {isProcessing ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  {mode === 'create' ? 'Creating...' : 'Saving...'}
+                  {mode === "create" ? "Creating..." : "Saving..."}
                 </>
+              ) : mode === "create" ? (
+                "Create Property"
               ) : (
-                mode === 'create' ? 'Create Property' : 'Save Changes'
+                "Save Changes"
               )}
             </Button>
             <Button
@@ -333,5 +356,5 @@ export function PropertyForm({
         </form>
       </Card>
     </div>
-  )
+  );
 }

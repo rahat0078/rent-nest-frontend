@@ -9,7 +9,7 @@ interface TenantHeaderProps {
   pageTitle?: string
 }
 
-export default function TenantHeader({ onMenuClick, pageTitle = 'Dashboard' }: TenantHeaderProps) {
+export default function TenantHeader({ onMenuClick, pageTitle = 'Dashboard'}: TenantHeaderProps) {
   return (
     <header className="fixed top-0 right-0 left-0 md:left-64 h-16 bg-card border-b border-border flex items-center justify-between px-6 z-30">
       {/* Left Section */}
@@ -37,6 +37,10 @@ export default function TenantHeader({ onMenuClick, pageTitle = 'Dashboard' }: T
           height={40}
           className="rounded-full w-10 h-10 cursor-pointer hover:opacity-80 transition-opacity"
         />
+
+        {/* 
+        //TODO: User info + logout button
+        */}
       </div>
     </header>
   )

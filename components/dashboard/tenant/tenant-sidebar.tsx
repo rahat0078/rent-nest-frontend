@@ -100,36 +100,6 @@ export default function TenantSidebar({
         </nav>
 
         {/* User Section */}
-        <div className="p-4 border-t border-border">
-          <div className="flex items-center gap-3">
-            <Image
-              unoptimized
-              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=48&h=48&fit=crop"
-              alt="User"
-              width={40}
-              height={40}
-              className="rounded-full w-10 h-10"
-            />
-            {!collapsed && (
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-foreground truncate">
-                  Sarah Johnson
-                </p>
-                <p className="text-xs text-muted-foreground">Tenant</p>
-              </div>
-            )}
-          </div>
-          {!collapsed && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="w-full mt-3 justify-start text-muted-foreground hover:text-foreground"
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              Logout
-            </Button>
-          )}
-        </div>
       </aside>
 
       {/* Mobile Drawer */}
@@ -178,34 +148,6 @@ export default function TenantSidebar({
             );
           })}
         </nav>
-
-        {/* User Section */}
-        <div className="p-4 border-t border-border">
-          <div className="flex items-center gap-3 mb-3">
-            <Image
-              unoptimized
-              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=48&h=48&fit=crop"
-              alt="User"
-              width={40}
-              height={40}
-              className="rounded-full w-10 h-10"
-            />
-            <div>
-              <p className="text-sm font-semibold text-foreground">
-                Sarah Johnson
-              </p>
-              <p className="text-xs text-muted-foreground">Tenant</p>
-            </div>
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="w-full justify-start text-muted-foreground hover:text-foreground"
-          >
-            <LogOut className="w-4 h-4 mr-2" />
-            Logout
-          </Button>
-        </div>
       </aside>
     </>
   );

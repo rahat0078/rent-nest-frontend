@@ -4,39 +4,44 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import { MapPin, Calendar } from "lucide-react";
-import { RentalStatusBadge } from "./rental-requst-badge";
+import { RentalStatusBadge } from "./rental-request-badge";
+import Link from "next/link";
 
-interface RentalRequestCardProps {
+export interface RentalRequestTableProps {
   id: string;
-  propertyImage: string;
-  propertyTitle: string;
-  category: string;
-  location: string;
-  rentAmount: number;
-  landlordName: string;
-  landlordPhoto: string;
+  tenantId: string;
+  propertyId: string;
   moveInDate: string;
-  requestDate: string;
+  message: string;
   status: "PENDING" | "APPROVED" | "REJECTED" | "ACTIVE" | "COMPLETED";
+  createdAt: string;
+  updatedAt: string;
+  property: {
+    id: string;
+    title: string;
+    location: string;
+    rentAmount: number;
+    images: string;
+    isAvailable: boolean;
+    category: {
+      name: string;
+    };
+    landlord: {
+      name: string;
+      profilePhoto: string | null;
+    };
+  };
 }
 
-export function RentalRequestCard({
-  id,
-  propertyImage,
-  propertyTitle,
-  category,
-  location,
-  rentAmount,
-  landlordName,
-  landlordPhoto,
-  moveInDate,
-  requestDate,
-  status,
-}: RentalRequestCardProps) {
+export function RentalRequestCard({ data }: { data: RentalRequestTableProps }) {
+  const { status } = data;
+  const initPhoto =
+    "https://i.pinimg.com/236x/15/0f/a8/150fa8800b0a0d5633abc1d1c4db3d87.jpg?nii=t";
+
   const renderActions = () => {
     const baseButtons = (
       <Button variant="outline" size="sm" className="flex-1 rounded-lg">
-        View Details
+        <Link href={`/dashboard/tenant/requests/${data.id}`}>View Details</Link>
       </Button>
     );
 
@@ -86,8 +91,8 @@ export function RentalRequestCard({
       <div className="relative h-40 w-full">
         <Image
           unoptimized
-          src={propertyImage}
-          alt={propertyTitle}
+          src={data.property.images}
+          alt={data.property.title}
           fill
           className="object-cover"
         />
@@ -96,7 +101,7 @@ export function RentalRequestCard({
             variant="secondary"
             className="bg-background/90 backdrop-blur-sm"
           >
-            {category}
+            {data.property.category.name}
           </Badge>
         </div>
       </div>
@@ -107,11 +112,11 @@ export function RentalRequestCard({
         <div className="flex justify-between items-start gap-2">
           <div className="flex-1">
             <h3 className="font-semibold text-foreground line-clamp-2">
-              {propertyTitle}
+              {data.property.title}
             </h3>
             <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
               <MapPin className="w-4 h-4" />
-              {location}
+              {data.property.location}
             </div>
           </div>
           <RentalStatusBadge status={status} />
@@ -122,14 +127,14 @@ export function RentalRequestCard({
           <div>
             <p className="text-muted-foreground">Monthly Rent</p>
             <p className="font-semibold text-foreground">
-              ${rentAmount.toLocaleString()}
+              ${data.property.rentAmount.toLocaleString()}
             </p>
           </div>
           <div>
             <p className="text-muted-foreground">Move-in Date</p>
             <div className="flex items-center gap-1 font-semibold text-foreground">
               <Calendar className="w-4 h-4" />
-              {new Date(moveInDate).toLocaleDateString()}
+              {new Date(data.moveInDate).toLocaleDateString()}
             </div>
           </div>
         </div>
@@ -138,18 +143,20 @@ export function RentalRequestCard({
         <div className="flex items-center gap-2 pt-2 border-t">
           <Image
             unoptimized
-            src={landlordPhoto}
-            alt={landlordName}
+            src={data.property.landlord.profilePhoto || initPhoto}
+            alt={data.property.landlord.name}
             width={32}
             height={32}
             className="w-8 h-8 rounded-full object-cover"
           />
           <div className="flex-1 text-sm">
             <p className="text-muted-foreground">Landlord</p>
-            <p className="font-medium text-foreground">{landlordName}</p>
+            <p className="font-medium text-foreground">
+              {data.property.landlord.name}
+            </p>
           </div>
           <span className="text-xs text-muted-foreground">
-            {new Date(requestDate).toLocaleDateString()}
+            {new Date(data.createdAt).toLocaleDateString()}
           </span>
         </div>
 

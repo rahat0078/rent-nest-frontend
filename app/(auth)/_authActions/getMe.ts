@@ -20,17 +20,15 @@ export const getMe = async () => {
     return {
       success: false,
       message: "User not logged in",
-      data: null
+      data: null,
     };
   }
   const result = await fetcher<TGetMeResponse>("/api/auth/me", {
     headers: {
       Cookie: `accessToken=${accessToken.value}`,
     },
-    cache: "no-store"
+    cache: "no-store",
   });
 
-  
-
-  return result
+  return result;
 };

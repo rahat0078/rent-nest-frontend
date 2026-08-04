@@ -6,7 +6,7 @@ interface AmenitiesProps {
   amenities: string[]
 }
 
-export function Amenities({ amenities }: AmenitiesProps) {
+export function Amenities({ amenities = [] }: AmenitiesProps) {
   return (
     <div className="bg-card border border-border rounded-xl p-6 space-y-4">
       <h3 className="text-lg font-semibold text-foreground">Amenities</h3>

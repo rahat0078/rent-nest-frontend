@@ -51,11 +51,14 @@ export function RecentActivities({
                   month: "short",
                   day: "numeric",
                   year: "numeric",
-                }
+                },
               );
 
               return (
-                <div key={u.id} className="flex items-center justify-between py-2.5">
+                <div
+                  key={u.id}
+                  className="flex items-center justify-between py-2.5"
+                >
                   <div className="flex items-center gap-3">
                     <Avatar className="h-8 w-8 border border-border">
                       <AvatarImage
@@ -117,7 +120,10 @@ export function RecentActivities({
             </p>
           ) : (
             recentRequests.map((req) => (
-              <div key={req.id} className="flex items-center justify-between py-3">
+              <div
+                key={req.id}
+                className="flex items-center justify-between py-3"
+              >
                 <div className="flex items-center gap-3">
                   <div className="flex h-8 w-8 items-center justify-center rounded-md bg-muted">
                     <Building className="h-4 w-4 text-muted-foreground" />
@@ -133,7 +139,7 @@ export function RecentActivities({
                 </div>
                 <div className="flex flex-col items-end gap-1">
                   <span className="font-mono text-xs font-bold text-foreground">
-                    ৳{req.amount ? req.amount.toLocaleString() : 0}
+                    ${req.amount ? req.amount.toLocaleString() : 0}
                   </span>
                   <Badge
                     variant="outline"

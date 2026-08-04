@@ -1,21 +1,28 @@
-import Image from 'next/image'
-import Link from 'next/link'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Bed, Bath, Ruler, MapPin, ToggleLeft, ToggleRight } from 'lucide-react'
+import Image from "next/image";
+import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Bed,
+  Bath,
+  Ruler,
+  MapPin,
+  ToggleLeft,
+  ToggleRight,
+} from "lucide-react";
 
 interface PropertyCardProps {
-  id: string
-  image: string
-  title: string
-  category: string
-  location: string
-  rent: number
-  bedrooms: number
-  bathrooms: number
-  size: number
-  available: boolean
-  createdDate: string
+  id: string;
+  image: string;
+  title: string;
+  category: string;
+  location: string;
+  rent: number;
+  bedrooms: number;
+  bathrooms: number;
+  size: number;
+  available: boolean;
+  createdDate: string;
 }
 
 export function PropertyCard({
@@ -36,7 +43,7 @@ export function PropertyCard({
       {/* Image */}
       <div className="relative h-48 bg-muted overflow-hidden">
         <Image
-        unoptimized
+          unoptimized
           src={image}
           alt={title}
           fill
@@ -46,8 +53,8 @@ export function PropertyCard({
           <Badge variant="default">{category}</Badge>
         </div>
         <div className="absolute bottom-3 left-3">
-          <Badge variant={available ? 'secondary' : 'destructive'}>
-            {available ? 'Available' : 'Not Available'}
+          <Badge variant={available ? "secondary" : "destructive"}>
+            {available ? "Available" : "Not Available"}
           </Badge>
         </div>
       </div>
@@ -55,13 +62,15 @@ export function PropertyCard({
       {/* Content */}
       <div className="p-4">
         <h3 className="font-bold text-lg text-foreground truncate">{title}</h3>
-        
+
         <div className="flex items-center gap-1 text-muted-foreground mt-2">
           <MapPin className="w-4 h-4" />
           <p className="text-sm truncate">{location}</p>
         </div>
 
-        <p className="text-2xl font-bold text-primary mt-3">${rent.toLocaleString()}</p>
+        <p className="text-2xl font-bold text-primary mt-3">
+          ${rent.toLocaleString()}
+        </p>
         <p className="text-xs text-muted-foreground">per month</p>
 
         {/* Details Grid */}
@@ -69,31 +78,42 @@ export function PropertyCard({
           <div className="text-center">
             <div className="flex items-center justify-center gap-1">
               <Bed className="w-4 h-4 text-primary" />
-              <span className="text-sm font-semibold text-foreground">{bedrooms}</span>
+              <span className="text-sm font-semibold text-foreground">
+                {bedrooms}
+              </span>
             </div>
             <p className="text-xs text-muted-foreground">Beds</p>
           </div>
           <div className="text-center">
             <div className="flex items-center justify-center gap-1">
               <Bath className="w-4 h-4 text-primary" />
-              <span className="text-sm font-semibold text-foreground">{bathrooms}</span>
+              <span className="text-sm font-semibold text-foreground">
+                {bathrooms}
+              </span>
             </div>
             <p className="text-xs text-muted-foreground">Baths</p>
           </div>
           <div className="text-center">
             <div className="flex items-center justify-center gap-1">
               <Ruler className="w-4 h-4 text-primary" />
-              <span className="text-sm font-semibold text-foreground">{size}</span>
+              <span className="text-sm font-semibold text-foreground">
+                {size}
+              </span>
             </div>
             <p className="text-xs text-muted-foreground">sq ft</p>
           </div>
         </div>
 
-        <p className="text-xs text-muted-foreground mt-4">Created {createdDate}</p>
+        <p className="text-xs text-muted-foreground mt-4">
+          Created {createdDate}
+        </p>
 
         {/* Actions */}
         <div className="flex gap-2 mt-4">
-          <Link href={`/dashboard/landlord/properties/${id}/edit`} className="flex-1">
+          <Link
+            href={`/dashboard/landlord/properties/${id}/edit`}
+            className="flex-1"
+          >
             <Button variant="outline" className="w-full" size="sm">
               Edit
             </Button>
@@ -108,5 +128,5 @@ export function PropertyCard({
         </div>
       </div>
     </div>
-  )
+  );
 }

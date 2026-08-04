@@ -1,52 +1,52 @@
-'use client'
+"use client";
 
-import { Check } from 'lucide-react'
+import { Check } from "lucide-react";
 
 interface TimelineStep {
-  label: string
-  completed: boolean
-  current: boolean
+  label: string;
+  completed: boolean;
+  current: boolean;
 }
 
 interface RequestTimelineProps {
-  currentStep: 'submitted' | 'approved' | 'payment' | 'active' | 'completed'
+  currentStep: "submitted" | "approved" | "payment" | "active" | "completed";
 }
 
 export function RequestTimeline({ currentStep }: RequestTimelineProps) {
   const steps: TimelineStep[] = [
     {
-      label: 'Submitted',
+      label: "Submitted",
       completed:
-        currentStep === 'approved' ||
-        currentStep === 'payment' ||
-        currentStep === 'active' ||
-        currentStep === 'completed',
-      current: currentStep === 'submitted',
+        currentStep === "approved" ||
+        currentStep === "payment" ||
+        currentStep === "active" ||
+        currentStep === "completed",
+      current: currentStep === "submitted",
     },
     {
-      label: 'Approved',
+      label: "Approved",
       completed:
-        currentStep === 'payment' ||
-        currentStep === 'active' ||
-        currentStep === 'completed',
-      current: currentStep === 'approved',
+        currentStep === "payment" ||
+        currentStep === "active" ||
+        currentStep === "completed",
+      current: currentStep === "approved",
     },
     {
-      label: 'Payment',
-      completed: currentStep === 'active' || currentStep === 'completed',
-      current: currentStep === 'payment',
+      label: "Payment",
+      completed: currentStep === "active" || currentStep === "completed",
+      current: currentStep === "payment",
     },
     {
-      label: 'Active',
-      completed: currentStep === 'completed',
-      current: currentStep === 'active',
+      label: "Active",
+      completed: currentStep === "completed",
+      current: currentStep === "active",
     },
     {
-      label: 'Completed',
+      label: "Completed",
       completed: false,
-      current: currentStep === 'completed',
+      current: currentStep === "completed",
     },
-  ]
+  ];
 
   return (
     <div className="space-y-8">
@@ -57,10 +57,10 @@ export function RequestTimeline({ currentStep }: RequestTimelineProps) {
             <div
               className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all ${
                 step.completed
-                  ? 'bg-primary border-primary'
+                  ? "bg-primary border-primary"
                   : step.current
-                    ? 'bg-background border-primary'
-                    : 'bg-background border-muted'
+                    ? "bg-background border-primary"
+                    : "bg-background border-muted"
               }`}
             >
               {step.completed ? (
@@ -74,7 +74,7 @@ export function RequestTimeline({ currentStep }: RequestTimelineProps) {
             {index < steps.length - 1 && (
               <div
                 className={`w-0.5 h-12 transition-all ${
-                  step.completed ? 'bg-primary' : 'bg-muted'
+                  step.completed ? "bg-primary" : "bg-muted"
                 }`}
               />
             )}
@@ -85,8 +85,8 @@ export function RequestTimeline({ currentStep }: RequestTimelineProps) {
             <p
               className={`font-semibold transition-colors ${
                 step.completed || step.current
-                  ? 'text-primary'
-                  : 'text-muted-foreground'
+                  ? "text-primary"
+                  : "text-muted-foreground"
               }`}
             >
               {step.label}
@@ -95,5 +95,5 @@ export function RequestTimeline({ currentStep }: RequestTimelineProps) {
         </div>
       ))}
     </div>
-  )
+  );
 }

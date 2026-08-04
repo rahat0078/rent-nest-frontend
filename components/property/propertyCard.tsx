@@ -80,7 +80,7 @@ export function PropertyCard({ property }: PropertyCardProps) {
             <p className="text-sm text-muted-foreground">Monthly Rent</p>
 
             <p className="text-lg font-bold text-primary">
-              ৳{property.rentAmount.toLocaleString()}
+              ${property.rentAmount.toLocaleString()}
             </p>
           </div>
 
@@ -110,10 +110,7 @@ export function PropertyCard({ property }: PropertyCardProps) {
         </div>
 
         <Link href={`properties/${property.id}`}>
-          <Button
-            variant="outline"
-            className="w-full"
-          >
+          <Button variant="outline" className="w-full">
             View Details
             <ChevronRight className="w-4 h-4" />
           </Button>

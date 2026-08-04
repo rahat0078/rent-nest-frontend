@@ -6,7 +6,7 @@ type FetchOptions = RequestInit & {
 
 export const fetcher = async <T>(
   endpoint: string,
-  options: FetchOptions = {}
+  options: FetchOptions = {},
 ): Promise<TApiResponse<T>> => {
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}${endpoint}`,
@@ -17,7 +17,7 @@ export const fetcher = async <T>(
         ...(options.headers || {}),
       },
       ...options,
-    }
+    },
   );
 
   const result: TApiResponse<T> = await response.json();

@@ -131,7 +131,7 @@ export function DashboardChart() {
               <span className="text-muted-foreground">Total Revenue Vol:</span>
             </div>
             <span className="font-mono font-bold text-foreground">
-              ৳ 108,500
+              $ 108,500
             </span>
           </div>
         </CardContent>

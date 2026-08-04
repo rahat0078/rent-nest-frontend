@@ -15,6 +15,7 @@ export default function Navbar({ user }: NavbarProps) {
   const userImage = user?.profilePhoto;
   const userName = user?.name || "User";
   const userEmail = user?.email || "";
+  const userRole = user?.role;
   const isLoggedIn = !!user;
 
   const dashboardRoute = isLoggedIn
@@ -73,7 +74,7 @@ export default function Navbar({ user }: NavbarProps) {
           >
             <div className="w-9 h-9 bg-primary rounded-lg flex items-center justify-center shadow-sm">
               <span className="text-primary-foreground font-bold text-lg">
-                <Home/>
+                <Home />
               </span>
             </div>
             <span className="text-lg font-semibold text-foreground">
@@ -177,13 +178,25 @@ export default function Navbar({ user }: NavbarProps) {
                       </Link>
 
                       <Link
-                        href="/dashboard/profile"
+                        href={
+                          userRole === "ADMIN" ? "/dashboard/admin/profile" :
+                          userRole === "LANDLORD" ? "/dashboard/landlord/profile" :
+                          userRole === "TENANT" ? "/dashboard/tenant/profile" : "/"
+                        }
                         onClick={() => setIsProfileDropdownOpen(false)}
                         className="w-full px-4 py-2 text-sm text-foreground hover:bg-accent hover:text-accent-foreground flex items-center gap-3 transition-colors duration-150"
                       >
                         <User className="w-4 h-4 text-muted-foreground" />
                         Profile
                       </Link>
+                      {/* <Link
+                        href="/dashboard/profile"
+                        onClick={() => setIsProfileDropdownOpen(false)}
+                        className="w-full px-4 py-2 text-sm text-foreground hover:bg-accent hover:text-accent-foreground flex items-center gap-3 transition-colors duration-150"
+                      >
+                        <User className="w-4 h-4 text-muted-foreground" />
+                        Profile
+                      </Link> */}
                     </div>
 
                     <div className="border-t border-border pt-1">

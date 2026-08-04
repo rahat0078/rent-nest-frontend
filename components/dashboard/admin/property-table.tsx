@@ -212,7 +212,7 @@ export function PropertyTable({ properties }: PropertyTableProps) {
                     </TableCell>
 
                     <TableCell className="font-mono text-xs font-bold text-foreground">
-                      ৳ {prop.rentAmount ? prop.rentAmount.toLocaleString() : 0}
+                      $ {prop.rentAmount ? prop.rentAmount.toLocaleString() : 0}
                       /mo
                     </TableCell>
 

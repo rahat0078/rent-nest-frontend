@@ -11,6 +11,7 @@ import {
   Settings,
   HelpCircle,
   HomeIcon,
+  User,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -28,13 +29,21 @@ export const sidebarNavItems = [
     title: "Users",
     href: "/dashboard/admin/users",
     icon: Users,
-    badge: "12",
   },
   {
     title: "Properties",
     href: "/dashboard/admin/properties",
     icon: Building2,
-    badge: "5",
+  },
+  {
+    title: "Profile",
+    href: "/dashboard/admin/profile",
+    icon: User,
+  },
+  {
+    title: "Back Home",
+    href: "/",
+    icon: Home,
   },
 ];
 
@@ -89,19 +98,6 @@ export function AdminSidebar({ onNavClick }: AdminSidebarProps) {
                 >
                   <Icon className="h-4 w-4 shrink-0" />
                   <span className="flex-1">{item.title}</span>
-                  {item.badge && (
-                    <Badge
-                      variant={isActive ? "secondary" : "outline"}
-                      className={cn(
-                        "ml-auto text-xs px-2 py-0.5 h-5 font-mono",
-                        isActive
-                          ? "bg-sidebar-primary-foreground/20 text-sidebar-primary-foreground border-none"
-                          : "text-muted-foreground",
-                      )}
-                    >
-                      {item.badge}
-                    </Badge>
-                  )}
                 </Link>
               );
             })}
@@ -138,14 +134,6 @@ export function AdminSidebar({ onNavClick }: AdminSidebarProps) {
           </div>
         </div>
       </ScrollArea>
-
-      {/* Footer Pro Banner */}
-      <Button className="p-4 border-t border-sidebar-border">
-        <Link href={"/"} className="flex justify-center items-center gap-2">
-          <HomeIcon />
-          Home
-        </Link>
-      </Button>
     </div>
   );
 }

@@ -29,7 +29,7 @@ export default async function PropertyDetailsPage({
     category: property.categoryId,
   });
   if (relatedPropertiesResponse.data === null) {
-    toast.error("not found")
+    toast.error("not found");
   }
 
   const relatedData = relatedPropertiesResponse.data.data

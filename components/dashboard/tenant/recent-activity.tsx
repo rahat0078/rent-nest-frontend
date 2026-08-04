@@ -1,52 +1,54 @@
-import { CheckCircle2, Clock } from 'lucide-react'
+import { CheckCircle2, Clock } from "lucide-react";
 
 interface ActivityItem {
-  id: string
-  title: string
-  timestamp: string
-  completed: boolean
-  property: string
+  id: string;
+  title: string;
+  timestamp: string;
+  completed: boolean;
+  property: string;
 }
 
 interface RecentActivityProps {
-  activities?: ActivityItem[]
+  activities?: ActivityItem[];
 }
 
 export default function RecentActivity({
   activities = [
     {
-      id: '1',
-      title: 'Rental Request Submitted',
-      timestamp: '2 hours ago',
+      id: "1",
+      title: "Rental Request Submitted",
+      timestamp: "2 hours ago",
       completed: true,
-      property: 'Modern Downtown Apartment',
+      property: "Modern Downtown Apartment",
     },
     {
-      id: '2',
-      title: 'Request Approved',
-      timestamp: '1 hour ago',
+      id: "2",
+      title: "Request Approved",
+      timestamp: "1 hour ago",
       completed: true,
-      property: 'Modern Downtown Apartment',
+      property: "Modern Downtown Apartment",
     },
     {
-      id: '3',
-      title: 'Payment Completed',
-      timestamp: '30 minutes ago',
+      id: "3",
+      title: "Payment Completed",
+      timestamp: "30 minutes ago",
       completed: true,
-      property: 'Modern Downtown Apartment',
+      property: "Modern Downtown Apartment",
     },
     {
-      id: '4',
-      title: 'Rental Activated',
-      timestamp: 'Just now',
+      id: "4",
+      title: "Rental Activated",
+      timestamp: "Just now",
       completed: true,
-      property: 'Modern Downtown Apartment',
+      property: "Modern Downtown Apartment",
     },
   ],
 }: RecentActivityProps) {
   return (
     <div className="bg-card border border-border rounded-xl p-6">
-      <h2 className="text-lg font-semibold text-foreground mb-6">Recent Activity</h2>
+      <h2 className="text-lg font-semibold text-foreground mb-6">
+        Recent Activity
+      </h2>
       <div className="space-y-6">
         {activities.map((activity, index) => (
           <div key={activity.id} className="flex gap-4">
@@ -55,8 +57,8 @@ export default function RecentActivity({
               <div
                 className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
                   activity.completed
-                    ? 'bg-green-100 dark:bg-green-900/30'
-                    : 'bg-blue-100 dark:bg-blue-900/30'
+                    ? "bg-green-100 dark:bg-green-900/30"
+                    : "bg-blue-100 dark:bg-blue-900/30"
                 }`}
               >
                 {activity.completed ? (
@@ -73,12 +75,16 @@ export default function RecentActivity({
             {/* Content */}
             <div className="flex-1 pt-1">
               <p className="font-medium text-foreground">{activity.title}</p>
-              <p className="text-sm text-muted-foreground mt-0.5">{activity.property}</p>
-              <p className="text-xs text-muted-foreground mt-2">{activity.timestamp}</p>
+              <p className="text-sm text-muted-foreground mt-0.5">
+                {activity.property}
+              </p>
+              <p className="text-xs text-muted-foreground mt-2">
+                {activity.timestamp}
+              </p>
             </div>
           </div>
         ))}
       </div>
     </div>
-  )
+  );
 }
