@@ -43,7 +43,7 @@ export function AdminHeader() {
       toast.success("Logged out successfully");
       router.push("/login");
     } catch (error) {
-      toast.error("Failed to log out");
+      // toast.error("Failed to log out");
     }
   };
 
