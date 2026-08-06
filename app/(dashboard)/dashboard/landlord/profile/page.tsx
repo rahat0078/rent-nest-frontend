@@ -12,12 +12,7 @@ export default async function ProfilePage() {
   const user = response.data
 
   return (
-    <div className="container mx-auto py-8 px-4">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-foreground mb-2">My Profile</h1>
-        <p className="text-muted-foreground">Manage your personal details and account status.</p>
-      </div>
-
+    <div>
       <UserProfileView user={user} />
     </div>
   )

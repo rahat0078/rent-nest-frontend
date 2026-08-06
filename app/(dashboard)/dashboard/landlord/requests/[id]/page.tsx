@@ -1,189 +1,386 @@
-import { LandlordHeader } from "@/components/dashboard/landlord/landlord-header";
-import { StatusBadge } from "@/components/dashboard/landlord/status-badge";
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
-import Link from "next/link";
-import { ArrowLeft, Mail, Phone, MapPin, Bed, Bath, Ruler } from "lucide-react";
+"use client";
 
-export default function RequestDetailsPage() {
+import { useEffect, useState, use } from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { toast } from "sonner";
+import {
+  Loader2,
+  CheckCircle,
+  XCircle,
+  Calendar,
+  DollarSign,
+  MapPin,
+  Bed,
+  Bath,
+  User,
+  Mail,
+  Phone,
+  ArrowLeft,
+} from "lucide-react";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { IRentalRequest, TRentalStatus } from "@/types/rentalRequest";
+import { getSingleRentalRequest } from "../../_landlordActions.ts/getSingleRentalRequest";
+import { updateRentalRequestStatus } from "../../_landlordActions.ts/updateRentalRequestStatus";
+import { LandlordHeader } from "@/components/dashboard/landlord/landlord-header";
+
+const getStatusBadge = (status: TRentalStatus) => {
+  switch (status) {
+    case "PENDING":
+      return (
+        <Badge
+          variant="outline"
+          className="bg-amber-50 text-amber-700 border-amber-200"
+        >
+          Pending
+        </Badge>
+      );
+    case "APPROVED":
+      return (
+        <Badge
+          variant="outline"
+          className="bg-blue-50 text-blue-700 border-blue-200"
+        >
+          Approved
+        </Badge>
+      );
+    case "REJECTED":
+      return (
+        <Badge
+          variant="outline"
+          className="bg-rose-50 text-rose-700 border-rose-200"
+        >
+          Rejected
+        </Badge>
+      );
+    case "ACTIVE":
+      return (
+        <Badge
+          variant="outline"
+          className="bg-emerald-50 text-emerald-700 border-emerald-200"
+        >
+          Active
+        </Badge>
+      );
+    case "COMPLETED":
+      return (
+        <Badge
+          variant="outline"
+          className="bg-slate-50 text-slate-700 border-slate-200"
+        >
+          Completed
+        </Badge>
+      );
+    default:
+      return <Badge variant="secondary">{status}</Badge>;
+  }
+};
+
+export default function RentalRequestDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = use(params);
+  const router = useRouter();
+
+  const [request, setRequest] = useState<IRentalRequest | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [updatingStatus, setUpdatingStatus] = useState<
+    "APPROVED" | "REJECTED" | null
+  >(null);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchDetail = async () => {
+      try {
+        const res = await getSingleRentalRequest(id);
+        if (isMounted) {
+          if (res.success && res.data) {
+            setRequest(res.data);
+          } else {
+            toast.error(res.message || "Failed to load request details");
+          }
+        }
+      } catch (error: unknown) {
+        if (isMounted) {
+          const msg =
+            error instanceof Error
+              ? error.message
+              : "Failed to load request details";
+          toast.error(msg);
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchDetail();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [id]);
+
+  const handleStatusUpdate = async (status: "APPROVED" | "REJECTED") => {
+    try {
+      setUpdatingStatus(status);
+      const res = await updateRentalRequestStatus(id, status);
+      if (res.success) {
+        toast.success(
+          res.message || `Request ${status.toLowerCase()} successfully!`,
+        );
+
+        const updatedRes = await getSingleRentalRequest(id);
+        if (updatedRes.success && updatedRes.data) {
+          setRequest(updatedRes.data);
+        }
+        router.refresh();
+      } else {
+        toast.error(res.message || `Failed to ${status.toLowerCase()} request`);
+      }
+    } catch (error: unknown) {
+      const msg =
+        error instanceof Error ? error.message : "Failed to update status";
+      toast.error(msg);
+    } finally {
+      setUpdatingStatus(null);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!request) {
+    return (
+      <div className="space-y-4 text-center py-12">
+        <p className="text-muted-foreground">Rental request not found.</p>
+        <Button
+          variant="outline"
+          onClick={() => router.push("/dashboard/landlord/rental-requests")}
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" /> Back to Requests
+        </Button>
+      </div>
+    );
+  }
+
+  const tenant = request.tenant;
+  const property = request.property;
+  const categoryName =
+    typeof property?.category === "object"
+      ? property?.category?.name
+      : property?.category || "N/A";
+
+  const rentAmount = property?.rentAmount ?? property?.rent ?? 0;
+
   return (
     <>
-      <LandlordHeader
-        title="Rental Request Details"
-        description="Review the full request details and tenant information"
-      />
+      <LandlordHeader title="Rental Details" description="" />
+      <div className="max-w-4xl mx-auto space-y-6 mt-4">
+        <div className="flex items-center justify-between">
+          <Button
+            variant="ghost"
+            onClick={() => router.push("/dashboard/landlord/rental-requests")}
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" /> Back to Requests
+          </Button>
+          <div>{getStatusBadge(request.status)}</div>
+        </div>
 
-      <div className="flex-1 overflow-y-auto">
-        <div className="p-6 space-y-6 max-w-4xl">
-          {/* Back Button */}
-          <Link href="/dashboard/landlord/requests">
-            <Button variant="ghost" className="gap-2">
-              <ArrowLeft className="w-4 h-4" />
-              Back to Requests
-            </Button>
-          </Link>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Main Content */}
-            <div className="lg:col-span-2 space-y-6">
-              {/* Tenant Information */}
-              <div className="bg-card border border-border rounded-xl p-6">
-                <h2 className="text-lg font-bold text-foreground mb-4">
-                  Tenant Information
-                </h2>
-                <div className="flex gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Main Details */}
+          <div className="md:col-span-2 space-y-6">
+            {/* Property Card */}
+            <div className="border border-border rounded-xl p-6 bg-card space-y-4">
+              <h3 className="text-lg font-semibold">Property Details</h3>
+              {property?.images && (
+                <div className="relative h-56 w-full overflow-hidden rounded-lg border border-border">
                   <Image
-                    src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop"
-                    alt="Tenant"
-                    width={80}
-                    height={80}
-                    className="w-20 h-20 rounded-full object-cover"
+                    unoptimized
+                    src={property.images}
+                    alt={property.title || "Property"}
+                    fill
+                    className="object-cover"
                   />
-                  <div className="flex-1">
-                    <h3 className="text-xl font-bold text-foreground">
-                      Sarah Johnson
-                    </h3>
-                    <div className="space-y-2 mt-3">
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Mail className="w-4 h-4" />
-                        sarah.johnson@email.com
-                      </div>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Phone className="w-4 h-4" />
-                        +1 (555) 123-4567
-                      </div>
-                    </div>
-                  </div>
+                </div>
+              )}
+              <div>
+                <h4 className="text-xl font-bold">{property?.title}</h4>
+                <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
+                  <MapPin className="h-4 w-4" /> {property?.location}
+                </p>
+              </div>
+
+              <p className="text-sm text-muted-foreground">
+                {property?.description}
+              </p>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2 border-t border-border text-sm">
+                <div>
+                  <span className="text-muted-foreground block text-xs">
+                    Category
+                  </span>
+                  <span className="font-medium">{categoryName}</span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground block text-xs">
+                    Rent
+                  </span>
+                  <span className="font-medium flex items-center">
+                    <DollarSign className="h-3.5 w-3.5" /> {rentAmount}/mo
+                  </span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground block text-xs">
+                    Bedrooms
+                  </span>
+                  <span className="font-medium flex items-center gap-1">
+                    <Bed className="h-3.5 w-3.5" /> {property?.bedrooms}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground block text-xs">
+                    Bathrooms
+                  </span>
+                  <span className="font-medium flex items-center gap-1">
+                    <Bath className="h-3.5 w-3.5" /> {property?.bathrooms}
+                  </span>
                 </div>
               </div>
 
-              {/* Property Information */}
-              <div className="bg-card border border-border rounded-xl p-6">
-                <h2 className="text-lg font-bold text-foreground mb-4">
-                  Property Information
-                </h2>
-                <div className="space-y-4">
-                  <div className="relative h-48 rounded-lg overflow-hidden bg-muted">
+              {property?.facilities && property.facilities.length > 0 && (
+                <div className="pt-2 border-t border-border">
+                  <span className="text-xs text-muted-foreground block mb-2">
+                    Facilities
+                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    {property.facilities.map((fac, idx) => (
+                      <Badge key={idx} variant="secondary" className="text-xs">
+                        {fac}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Application Message */}
+            <div className="border border-border rounded-xl p-6 bg-card space-y-3">
+              <h3 className="text-lg font-semibold">Application Message</h3>
+              <p className="text-sm text-muted-foreground bg-muted/50 p-4 rounded-lg border border-border">
+                {request.message || "No message provided by tenant."}
+              </p>
+              <div className="flex items-center gap-4 text-xs text-muted-foreground pt-2">
+                <span className="flex items-center gap-1">
+                  <Calendar className="h-3.5 w-3.5" /> Move-In Date:{" "}
+                  {new Date(request.moveInDate).toLocaleDateString()}
+                </span>
+                <span>
+                  Requested on:{" "}
+                  {new Date(request.createdAt).toLocaleDateString()}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Sidebar Info & Actions */}
+          <div className="space-y-6">
+            {/* Tenant Card */}
+            <div className="border border-border rounded-xl p-6 bg-card space-y-4">
+              <h3 className="text-lg font-semibold">Tenant Information</h3>
+              <div className="flex items-center gap-3">
+                {tenant?.profilePhoto ? (
+                  <div className="relative h-12 w-12 rounded-full overflow-hidden border border-border">
                     <Image
-                      src="https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=600&h=400&fit=crop"
-                      alt="Property"
+                      unoptimized
+                      src={tenant.profilePhoto}
+                      alt={tenant.name}
                       fill
                       className="object-cover"
                     />
                   </div>
-                  <div>
-                    <h3 className="text-lg font-bold text-foreground">
-                      Luxury Apartment Downtown
-                    </h3>
-                    <div className="flex items-center gap-2 text-muted-foreground mt-1">
-                      <MapPin className="w-4 h-4" />
-                      <span>Downtown, New York</span>
-                    </div>
+                ) : (
+                  <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center">
+                    <User className="h-6 w-6 text-muted-foreground" />
                   </div>
-                  <div className="grid grid-cols-3 gap-3 py-3 border-y border-border">
-                    <div>
-                      <div className="flex items-center gap-1 text-sm font-semibold text-foreground">
-                        <Bed className="w-4 h-4 text-primary" />2 Beds
-                      </div>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Bedrooms
-                      </p>
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-1 text-sm font-semibold text-foreground">
-                        <Bath className="w-4 h-4 text-primary" />2 Baths
-                      </div>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Bathrooms
-                      </p>
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-1 text-sm font-semibold text-foreground">
-                        <Ruler className="w-4 h-4 text-primary" />
-                        1200 sq ft
-                      </div>
-                      <p className="text-xs text-muted-foreground mt-1">Size</p>
-                    </div>
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-primary">৳3,500</p>
-                    <p className="text-xs text-muted-foreground">per month</p>
-                  </div>
+                )}
+                <div>
+                  <p className="font-medium">{tenant?.name || "N/A"}</p>
+                  <p className="text-xs text-muted-foreground">Applicant</p>
                 </div>
               </div>
 
-              {/* Request Details */}
-              <div className="bg-card border border-border rounded-xl p-6">
-                <h2 className="text-lg font-bold text-foreground mb-4">
-                  Request Details
-                </h2>
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-sm font-medium text-muted-foreground">
-                      Move-in Date
-                    </label>
-                    <p className="text-foreground mt-1">January 15, 2025</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-muted-foreground">
-                      Status
-                    </label>
-                    <div className="mt-1">
-                      <StatusBadge status="PENDING" />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-muted-foreground">
-                      Tenant Message
-                    </label>
-                    <p className="text-foreground mt-1 bg-muted p-3 rounded-lg">
-                      I m very interested in renting this beautiful apartment in
-                      downtown New York. The location is perfect for my work,
-                      and I love the modern design of the property. I m ready to
-                      move in anytime and can provide all necessary
-                      documentation.
-                    </p>
-                  </div>
+              <div className="space-y-2 text-sm pt-2 border-t border-border">
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Mail className="h-4 w-4" />
+                  <span className="text-foreground text-xs truncate">
+                    {tenant?.email || "N/A"}
+                  </span>
                 </div>
+                {(tenant?.phoneNumber || tenant?.phone) && (
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Phone className="h-4 w-4" />
+                    <span className="text-foreground text-xs">
+                      {tenant?.phoneNumber || tenant?.phone}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
 
-            {/* Sidebar */}
-            <div className="lg:col-span-1">
-              <div className="bg-card border border-border rounded-xl p-6 sticky top-6">
-                <h3 className="font-bold text-foreground mb-4">
-                  Request Actions
-                </h3>
-                <div className="space-y-2">
-                  <Button className="w-full" size="lg">
+            {/* Actions Block */}
+            <div className="border border-border rounded-xl p-6 bg-card space-y-4">
+              <h3 className="text-lg font-semibold">Actions</h3>
+              {request.status === "PENDING" ? (
+                <div className="space-y-3">
+                  <Button
+                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
+                    disabled={updatingStatus !== null}
+                    onClick={() => handleStatusUpdate("APPROVED")}
+                  >
+                    {updatingStatus === "APPROVED" ? (
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    ) : (
+                      <CheckCircle className="h-4 w-4 mr-2" />
+                    )}
                     Approve Request
                   </Button>
-                  <Button variant="destructive" className="w-full" size="lg">
+                  <Button
+                    variant="destructive"
+                    className="w-full"
+                    disabled={updatingStatus !== null}
+                    onClick={() => handleStatusUpdate("REJECTED")}
+                  >
+                    {updatingStatus === "REJECTED" ? (
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    ) : (
+                      <XCircle className="h-4 w-4 mr-2" />
+                    )}
                     Reject Request
                   </Button>
-                  <Button variant="outline" className="w-full" size="lg">
-                    Contact Tenant
-                  </Button>
                 </div>
-
-                {/* Request Meta */}
-                <div className="mt-6 pt-6 border-t border-border space-y-3">
-                  <div>
-                    <p className="text-xs font-medium text-muted-foreground uppercase">
-                      Request ID
-                    </p>
-                    <p className="text-sm text-foreground mt-1">
-                      #REQ-2025-001
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs font-medium text-muted-foreground uppercase">
-                      Submitted
-                    </p>
-                    <p className="text-sm text-foreground mt-1">3 days ago</p>
-                  </div>
+              ) : (
+                <div className="p-3 text-center rounded-lg bg-muted/50 border border-border">
+                  <p className="text-xs text-muted-foreground">
+                    This request is currently{" "}
+                    <span className="font-semibold text-foreground">
+                      {request.status}
+                    </span>
+                    .
+                  </p>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>

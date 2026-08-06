@@ -10,6 +10,7 @@ import {
   Plus,
   FileText,
   HomeIcon,
+  User,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -33,6 +34,11 @@ export function LandlordSidebar() {
       href: "/dashboard/landlord/requests",
       label: "Rental Requests",
       icon: FileText,
+    },
+    {
+      href: "/dashboard/landlord/profile",
+      label: "My Profile",
+      icon: User,
     },
     { href: "/", label: "Back Home", icon: HomeIcon },
   ];
@@ -58,11 +64,16 @@ export function LandlordSidebar() {
         <div className="flex flex-col h-full">
           {/* Logo */}
           <div className="p-6 border-b border-border">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-bold text-lg">
-                RN
+            <Link
+              href="/"
+              className="hidden sm:flex items-center gap-2.5 shrink-0"
+            >
+              <div className="w-9 h-9 bg-primary rounded-lg flex items-center justify-center shadow-sm">
+                <span className="text-primary-foreground font-bold text-lg">
+                  <Home />
+                </span>
               </div>
-              <span className="font-bold text-lg text-foreground">
+              <span className="text-lg font-semibold text-foreground">
                 RentNest
               </span>
             </Link>

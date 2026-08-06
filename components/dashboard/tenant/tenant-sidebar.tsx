@@ -12,6 +12,7 @@ import {
   ChevronRight,
   LogOut,
   HomeIcon,
+  Home,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
@@ -60,7 +61,19 @@ export default function TenantSidebar({
         {/* Header */}
         <div className="p-6 flex items-center justify-between">
           {!collapsed && (
-            <h1 className="text-xl font-bold text-primary">RentNest</h1>
+            <Link
+              href="/"
+              className="hidden sm:flex items-center gap-2.5 shrink-0"
+            >
+              <div className="w-9 h-9 bg-primary rounded-lg flex items-center justify-center shadow-sm">
+                <span className="text-primary-foreground font-bold text-lg">
+                  <Home />
+                </span>
+              </div>
+              <span className="text-lg font-semibold text-foreground">
+                RentNest
+              </span>
+            </Link>
           )}
           <Button
             variant="ghost"
