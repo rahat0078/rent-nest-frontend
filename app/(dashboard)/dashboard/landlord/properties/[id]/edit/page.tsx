@@ -129,6 +129,7 @@ export default function EditPropertyPage({
       toast.success("Property updated successfully!");
       router.push("/dashboard/landlord/properties");
       router.refresh();
+      reset()
     } catch (error: unknown) {
       const message =
         error instanceof Error ? error.message : "Failed to update property";
@@ -217,7 +218,7 @@ export default function EditPropertyPage({
 
           {/* Rent Amount */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">Rent Amount ($/mo)</label>
+            <label className="text-sm font-medium">Rent Amount (৳/mo)</label>
             <Input type="number" {...register("rentAmount")} />
             {errors.rentAmount && (
               <p className="text-xs text-destructive">

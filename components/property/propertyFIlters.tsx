@@ -170,7 +170,7 @@ export function PropertyFilters() {
           Maximum Rent
         </label>
         <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">$</span>
+          <span className="text-sm text-muted-foreground">৳</span>
           <input
             type="number"
             value={rentAmount}

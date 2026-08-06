@@ -46,7 +46,7 @@ export default async function PropertiesPage({ searchParams }: Props) {
   const properties = response?.data?.data || [];
   const meta = response?.data?.meta || {
     page: 1,
-    limit: 10,
+    limit: 8,
     total: 0,
     totalPage: 1,
   };

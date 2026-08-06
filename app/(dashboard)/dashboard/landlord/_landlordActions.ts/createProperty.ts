@@ -2,6 +2,7 @@
 
 import { fetcher } from "@/lib/fetcher";
 import { TCreatePropertyInput } from "@/schemas/property";
+import { revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
 
 export const createProperty = async (payload: TCreatePropertyInput) => {
@@ -23,5 +24,8 @@ export const createProperty = async (payload: TCreatePropertyInput) => {
       Authorization: accessToken,
     },
   });
+  if(res.success){
+    revalidateTag("properties", "max")
+  }
   return res;
 };

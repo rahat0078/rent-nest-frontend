@@ -80,7 +80,7 @@ export function PropertyCard({ property }: PropertyCardProps) {
             <p className="text-sm text-muted-foreground">Monthly Rent</p>
 
             <p className="text-lg font-bold text-primary">
-              ${property.rentAmount.toLocaleString()}
+              ৳{property.rentAmount.toLocaleString()}
             </p>
           </div>
 

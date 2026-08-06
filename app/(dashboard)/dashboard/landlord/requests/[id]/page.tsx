@@ -106,7 +106,7 @@ export default function RequestDetailsPage() {
                     </div>
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-primary">$3,500</p>
+                    <p className="text-sm font-semibold text-primary">৳3,500</p>
                     <p className="text-xs text-muted-foreground">per month</p>
                   </div>
                 </div>

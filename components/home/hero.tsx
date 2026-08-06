@@ -100,7 +100,7 @@ export default function Hero() {
                 {/* Floating Card */}
                 <div className="absolute top-6 right-6 rounded-2xl border border-border bg-background/90 p-4 shadow-xl backdrop-blur">
                   <p className="text-xs text-muted-foreground">Starting From</p>
-                  <h4 className="text-2xl font-bold text-primary"> $850/mo</h4>
+                  <h4 className="text-2xl font-bold text-primary"> ৳2500/mo</h4>
                 </div>
               </div>
             </div>

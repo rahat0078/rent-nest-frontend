@@ -41,6 +41,7 @@ export default function NewPropertyPage() {
     handleSubmit,
     setValue,
     watch,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm<TCreatePropertyInput, unknown, TCreatePropertyOutput>({
     resolver: zodResolver(createPropertySchema),
@@ -102,6 +103,7 @@ export default function NewPropertyPage() {
       toast.success("Property created successfully!");
       router.push("/dashboard/landlord/properties");
       router.refresh();
+      reset()
     } catch (error: unknown) {
       const message =
         error instanceof Error ? error.message : "Failed to create property";
@@ -174,7 +176,7 @@ export default function NewPropertyPage() {
 
           {/* Rent Amount */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">Rent Amount ($/mo)</label>
+            <label className="text-sm font-medium">Rent Amount (৳/mo)</label>
             <Input type="number" {...register("rentAmount")} />
             {errors.rentAmount && (
               <p className="text-xs text-destructive">{errors.rentAmount.message}</p>
