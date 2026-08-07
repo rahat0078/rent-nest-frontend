@@ -10,12 +10,10 @@ import {
   User,
   ChevronLeft,
   ChevronRight,
-  LogOut,
   HomeIcon,
   Home,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 
 interface TenantSidebarProps {
   isOpen?: boolean;

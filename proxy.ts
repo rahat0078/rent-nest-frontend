@@ -14,10 +14,9 @@ interface CustomJwtPayload {
   email: string;
   name: string;
   role: "ADMIN" | "LANDLORD" | "TENANT";
-  iat?: number,
-  exp?: number
+  iat?: number;
+  exp?: number;
 }
-
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -29,9 +28,9 @@ export function proxy(request: NextRequest) {
     try {
       const decoded = jwtDecode<CustomJwtPayload>(accessToken);
       role = decoded.role;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      toast.error(error.message)
+      toast.error(error.message);
     }
   }
 
@@ -56,7 +55,7 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL(defaultDashboard, request.url));
   }
 
-  if (pathname.startsWith("/dashboard/tenant/payment")) {
+  if (pathname.startsWith("/dashboard/tenant/payments")) {
     if (role !== "TENANT") {
       return NextResponse.redirect(new URL("/", request.url));
     }

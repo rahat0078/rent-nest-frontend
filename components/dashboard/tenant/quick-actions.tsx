@@ -1,12 +1,12 @@
-import Link from 'next/link'
-import { LucideIcon, Search, FileText, CreditCard, Star } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import Link from "next/link";
+import { LucideIcon, Search, FileText, CreditCard, Star } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface ActionCardProps {
-  icon: LucideIcon
-  title: string
-  description: string
-  href: string
+  icon: LucideIcon;
+  title: string;
+  description: string;
+  href: string;
 }
 
 function ActionCard({ icon: Icon, title, description, href }: ActionCardProps) {
@@ -23,45 +23,47 @@ function ActionCard({ icon: Icon, title, description, href }: ActionCardProps) {
         </Button>
       </div>
     </Link>
-  )
+  );
 }
 
 export default function QuickActions() {
   const actions = [
     {
       icon: Search,
-      title: 'Browse Properties',
-      description: 'Explore available rental properties',
-      href: '/properties',
+      title: "Browse Properties",
+      description: "Explore available rental properties",
+      href: "/properties",
     },
     {
       icon: FileText,
-      title: 'View Requests',
-      description: 'Manage your rental requests',
-      href: '/dashboard/tenant/requests',
+      title: "View Requests",
+      description: "Manage your rental requests",
+      href: "/dashboard/tenant/requests",
     },
     {
       icon: CreditCard,
-      title: 'Payment History',
-      description: 'View all transactions',
-      href: '/dashboard/tenant/payments',
+      title: "Payment History",
+      description: "View all transactions",
+      href: "/dashboard/tenant/payments",
     },
     {
       icon: Star,
-      title: 'Leave Review',
-      description: 'Share your rental experience',
-      href: '/dashboard/tenant/reviews',
+      title: "Leave Review",
+      description: "Share your rental experience",
+      href: "/dashboard/tenant/reviews",
     },
-  ]
+  ];
 
   return (
     <div>
-      <h2 className="text-lg font-semibold text-foreground mb-4">Quick Actions</h2>
+      <h2 className="text-lg font-semibold text-foreground mb-4">
+        Quick Actions
+      </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {actions.map((action) => (
           <ActionCard key={action.title} {...action} />
         ))}
       </div>
     </div>
-  )
+  );
 }
