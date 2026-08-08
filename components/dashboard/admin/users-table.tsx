@@ -38,14 +38,30 @@ import {
   PaginationItem,
   PaginationLink,
 } from "@/components/ui/pagination";
-import {
-  TUser,
-  TUsersMeta,
-} from "@/app/(dashboard)/dashboard/admin/_adminActions/getAllUsers";
-import { updateUserStatus } from "@/app/(dashboard)/dashboard/admin/_adminActions/updateUserStatus";
+
+import { updateUserStatus } from "@/app/(dashboard)/dashboard/admin/_adminActions/adminActions";
+
+// User specific interface using ACTIVE | BANNED
+export interface UserType {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  role: "ADMIN" | "LANDLORD" | "TENANT";
+  status: "ACTIVE" | "BANNED";
+  profilePhoto?: string;
+  createdAt: string | Date;
+}
+
+export interface TUsersMeta {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
 
 interface UsersTableProps {
-  users: TUser[];
+  users: UserType[];
   meta: TUsersMeta;
 }
 
@@ -55,10 +71,14 @@ export function UsersTable({ users, meta }: UsersTableProps) {
   const searchParams = useSearchParams();
   const [loadingId, setLoadingId] = useState<string | null>(null);
 
-  const toggleUserStatus = async (user: TUser) => {
+  // Status Toggle Logic Fixed
+  const toggleUserStatus = async (user: UserType) => {
     try {
       setLoadingId(user.id);
-      const nextStatus = user.status === "ACTIVE" ? "BLOCKED" : "ACTIVE";
+      // If current status is ACTIVE, set to BANNED, otherwise set to ACTIVE
+      const nextStatus: "ACTIVE" | "BANNED" =
+        user.status === "ACTIVE" ? "BANNED" : "ACTIVE";
+
       await updateUserStatus(user.id, { status: nextStatus });
       router.refresh();
     } catch (err) {
@@ -106,8 +126,7 @@ export function UsersTable({ users, meta }: UsersTableProps) {
               </TableRow>
             ) : (
               users.map((user) => {
-                const isBlocked =
-                  user.status === "BLOCKED" || user.status === "BANNED";
+                const isBanned = user.status === "BANNED";
                 const formattedDate = new Date(
                   user.createdAt,
                 ).toLocaleDateString("en-US", {
@@ -177,12 +196,12 @@ export function UsersTable({ users, meta }: UsersTableProps) {
                       <Badge
                         variant="outline"
                         className={
-                          isBlocked
+                          isBanned
                             ? "border-destructive/40 bg-destructive/10 text-destructive text-[10px] px-2 py-0.5 font-semibold"
                             : "border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] px-2 py-0.5 font-semibold"
                         }
                       >
-                        {isBlocked ? "BANNED" : "ACTIVE"}
+                        {user.status}
                       </Badge>
                     </TableCell>
 
@@ -195,16 +214,12 @@ export function UsersTable({ users, meta }: UsersTableProps) {
 
                     <TableCell className="text-right">
                       <DropdownMenu>
-                        <DropdownMenuTrigger>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8"
-                            disabled={loadingId === user.id}
-                          >
-                            <MoreHorizontal className="h-4 w-4" />
-                            <span className="sr-only">Open menu</span>
-                          </Button>
+                        <DropdownMenuTrigger
+                          className="inline-flex h-8 w-8 items-center justify-center rounded-md text-xs font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
+                          disabled={loadingId === user.id}
+                        >
+                          <MoreHorizontal className="h-4 w-4" />
+                          <span className="sr-only">Open menu</span>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-44">
                           <DropdownMenuLabel className="text-[11px]">
@@ -218,12 +233,12 @@ export function UsersTable({ users, meta }: UsersTableProps) {
                           <DropdownMenuItem
                             onClick={() => toggleUserStatus(user)}
                             className={
-                              isBlocked
+                              isBanned
                                 ? "text-xs cursor-pointer text-emerald-600 focus:text-emerald-600 font-medium"
                                 : "text-xs cursor-pointer text-destructive focus:text-destructive font-medium"
                             }
                           >
-                            {isBlocked ? (
+                            {isBanned ? (
                               <>
                                 <CheckCircle2 className="mr-2 h-3.5 w-3.5" />
                                 Unban User

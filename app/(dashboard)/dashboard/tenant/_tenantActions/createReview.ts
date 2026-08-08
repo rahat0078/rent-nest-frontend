@@ -3,7 +3,7 @@
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { fetcher } from "@/lib/fetcher";
-import { TCreateReviewPayload, TReviewResponseData } from "@/types/review";
+import { TCreateReviewPayload, TReviewResponseData } from "@/schemas/review";
 
 export const createReview = async (payload: TCreateReviewPayload) => {
   const cookieStore = await cookies();

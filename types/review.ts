@@ -17,25 +17,3 @@ export interface IReview {
     profilePhoto?: string;
   };
 }
-export interface TCreateReviewPayload {
-  propertyId: string;
-  rating: number;
-  review: string;
-}
-
-export interface TReviewResponseData {
-  id: string;
-  tenantId: string;
-  propertyId: string;
-  rating: number;
-  review: string;
-  createdAt: string;
-  tenant: {
-    name: string;
-    profilePhoto: string | null;
-  };
-  property: {
-    id: string;
-    title: string;
-  };
-}

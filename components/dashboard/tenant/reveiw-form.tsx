@@ -1,23 +1,27 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Button } from '@/components/ui/button'
-import { Loader2 } from 'lucide-react'
-import { StarRating } from './star-rating'
-import { ReviewFormData, reviewSchema } from '@/schemas/review'
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
+import { StarRating } from "./StarRating";
+import { createReviewSchema, TCreateReviewPayload } from "@/schemas/review";
 
 interface ReviewFormProps {
-  propertyId: string
-  onSubmitSuccess?: () => void
-  disabled?: boolean
+  propertyId: string;
+  onSubmitSuccess?: () => void;
+  disabled?: boolean;
 }
 
-export function ReviewForm({ propertyId, onSubmitSuccess, disabled = false }: ReviewFormProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitError, setSubmitError] = useState<string | null>(null)
-  const [submitSuccess, setSubmitSuccess] = useState(false)
+export function ReviewForm({
+  propertyId,
+  onSubmitSuccess,
+  disabled = false,
+}: ReviewFormProps) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
 
   const {
     register,
@@ -26,51 +30,54 @@ export function ReviewForm({ propertyId, onSubmitSuccess, disabled = false }: Re
     formState: { errors },
     setValue,
     reset,
-  } = useForm<ReviewFormData>({
-    resolver: zodResolver(reviewSchema),
+  } = useForm<TCreateReviewPayload>({
+    resolver: zodResolver(createReviewSchema),
     defaultValues: {
       propertyId,
       rating: 0,
-      review: '',
+      review: "",
     },
-  })
+  });
 
-  const rating = watch('rating')
+  const rating = watch("rating");
 
-  const onSubmit = async (data: ReviewFormData) => {
-    setIsSubmitting(true)
-    setSubmitError(null)
+  const onSubmit = async (data: TCreateReviewPayload) => {
+    setIsSubmitting(true);
+    setSubmitError(null);
 
     try {
-      const response = await fetch('/api/reviews', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/reviews", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
-      })
+      });
 
       if (!response.ok) {
-        throw new Error('Failed to submit review')
+        throw new Error("Failed to submit review");
       }
 
-      setSubmitSuccess(true)
-      reset()
-      onSubmitSuccess?.()
+      setSubmitSuccess(true);
+      reset();
+      onSubmitSuccess?.();
 
-      // Auto-hide success message after 3 seconds
-      setTimeout(() => setSubmitSuccess(false), 3000)
+      setTimeout(() => setSubmitSuccess(false), 3000);
     } catch (error) {
-      setSubmitError(error instanceof Error ? error.message : 'An error occurred')
+      setSubmitError(
+        error instanceof Error ? error.message : "An error occurred"
+      );
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   if (submitSuccess) {
     return (
       <div className="p-4 bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-lg text-center">
-        <p className="text-green-700 dark:text-green-300 font-semibold">Review submitted successfully!</p>
+        <p className="text-green-700 dark:text-green-300 font-semibold">
+          Review submitted successfully!
+        </p>
       </div>
-    )
+    );
   }
 
   return (
@@ -82,29 +89,39 @@ export function ReviewForm({ propertyId, onSubmitSuccess, disabled = false }: Re
       )}
 
       <div className="space-y-2">
-        <label className="text-sm font-semibold text-foreground">Your Rating</label>
+        <label className="text-sm font-semibold text-foreground">
+          Your Rating
+        </label>
         <StarRating
           value={rating}
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          onChange={(e: any) => setValue('rating', e.target.value)}
+          onChange={(val: number) => setValue("rating", val, { shouldValidate: true })}
           disabled={disabled || isSubmitting}
-          error={errors.rating?.message}
         />
+        {errors.rating && (
+          <span className="text-sm text-destructive block">
+            {errors.rating.message}
+          </span>
+        )}
       </div>
 
       <div className="space-y-2">
-        <label htmlFor="review" className="text-sm font-semibold text-foreground">
+        <label
+          htmlFor="review"
+          className="text-sm font-semibold text-foreground"
+        >
           Your Review
         </label>
         <textarea
           id="review"
           placeholder="Share your experience with this property..."
           disabled={disabled || isSubmitting}
-          {...register('review')}
+          {...register("review")}
           className="w-full min-h-30 p-3 border border-border rounded-lg bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed resize-none"
         />
         {errors.review && (
-          <span className="text-sm text-destructive">{errors.review.message}</span>
+          <span className="text-sm text-destructive block">
+            {errors.review.message}
+          </span>
         )}
       </div>
 
@@ -114,8 +131,8 @@ export function ReviewForm({ propertyId, onSubmitSuccess, disabled = false }: Re
         className="w-full"
       >
         {isSubmitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-        {isSubmitting ? 'Submitting...' : 'Submit Review'}
+        {isSubmitting ? "Submitting..." : "Submit Review"}
       </Button>
     </form>
-  )
+  );
 }
